@@ -1,6 +1,5 @@
 // ── ANIDLE CHARACTER DATABASE ─────────────────────────────────────────────
-
-const ANIME_DB = [
+[
 
   // ── NARUTO ────────────────────────────────────────────────────────────────
   { name: "Naruto Uzumaki",        series: "Naruto",                  age: 17,   height: 166, gender: "M", hair: "blonde",        eyes: "blue"    },
