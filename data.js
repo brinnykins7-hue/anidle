@@ -1,5 +1,5 @@
 // ── ANIDLE CHARACTER DATABASE ─────────────────────────────────────────────
-[
+const ANIME_DB = [
 
   // ── NARUTO ────────────────────────────────────────────────────────────────
   { name: "Naruto Uzumaki",        series: "Naruto",                  age: 17,   height: 166, gender: "M", hair: "blonde",        eyes: "blue"    },
@@ -519,13 +519,6 @@
   { name: "Aiz Wallenstein",       series: "DanMachi",                age: 18,   height: 165, gender: "F", hair: "blonde",        eyes: "golden"  },
   { name: "Ryuu Lion",             series: "DanMachi",                age: 100,  height: 168, gender: "F", hair: "blonde",        eyes: "green"   },
   { name: "Liliruca Arde",         series: "DanMachi",                age: 14,   height: 140, gender: "F", hair: "brown",         eyes: "brown"   },
-
-];
-
-// Derive unique series list
-const ALL_SERIES = [...new Set(ANIME_DB.map(c => c.series))].sort();
-
-  // ── SWORD ART ONLINE ADDED ABOVE — skip ──────────────────────────────────
 
   // ── ANGEL BEATS (DRAMA / SUPERNATURAL) ───────────────────────────────────
   { name: "Yuzuru Otonashi",       series: "Angel Beats",             age: 17,   height: 175, gender: "M", hair: "brown",         eyes: "brown"   },
