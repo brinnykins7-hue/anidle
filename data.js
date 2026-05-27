@@ -831,4 +831,3 @@ const ALL_SERIES = [...new Set(ANIME_DB.map(c => c.series))].sort();
   { name: "Madara (Nyanko-sensei)",series: "Natsume's Book of Friends", age: 1000,height: 30, gender: "M", hair: "white",         eyes: "red"     },
   { name: "Touko Fujiwara",        series: "Natsume's Book of Friends", age: 45, height: 160, gender: "F", hair: "brown",         eyes: "brown"   },
   { name: "Kaname Tanuma",         series: "Natsume's Book of Friends", age: 15, height: 173, gender: "M", hair: "black",         eyes: "grey"    },
-
