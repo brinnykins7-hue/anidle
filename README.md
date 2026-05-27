@@ -27,6 +27,10 @@ Edit `data.js` and follow the format:
 - `gender`: `"M"` or `"F"`
 - `hair` / `eyes`: lowercase color names; multiple colors comma-separated: `"black,red"`
 - The `ALL_SERIES` array is auto-generated from the data — no extra step needed
+- 
+## This is not affiliated with the following websites. This is just a simple game
+https://anidle.net/
+https://aniguessr.com/anidle
 
 ## 📜 License
 
