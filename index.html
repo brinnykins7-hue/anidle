@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ANIDLE – Guess the Anime Character</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <header>
+    <h1 class="logo">ANIDLE</h1>
+    <p class="tagline">Guess the Anime Character</p>
+  </header>
+
+  <!-- SETUP SCREEN -->
+  <div id="setup-screen" class="screen active">
+    <div class="setup-container">
+
+      <div class="setup-card">
+        <h2 class="section-title">Select Your Anime Pool</h2>
+        <p class="setup-sub">Pick the series you want included. All start unselected — click a genre to expand, then click series to add them.</p>
+
+        <div class="series-controls">
+          <button id="select-all-btn" class="ctrl-btn">Select All</button>
+          <button id="clear-all-btn" class="ctrl-btn">Clear All</button>
+        </div>
+
+        <div id="genre-list" class="genre-list"></div>
+
+        <p id="pool-count" class="pool-count">0 series selected (0 characters)</p>
+        <button id="start-btn" class="start-btn" disabled>▶ Start Game</button>
+      </div>
+
+      <div class="how-to-play">
+        <h3 class="section-title">How to Play</h3>
+        <ul>
+          <li>Select anime series above, then hit Start Game.</li>
+          <li>Type a character name — autocomplete will help you pick.</li>
+          <li>After each guess, 7 colored cells reveal clues:</li>
+          <li><span class="dot green"></span><strong>Green</strong> — exact match</li>
+          <li><span class="dot yellow"></span><strong>Yellow</strong> — close (age/height ±15%; hair/eyes share a color)</li>
+          <li><span class="dot red"></span><strong>Red</strong> — wrong</li>
+          <li>↑ / ↓ on age & height show which direction to guess.</li>
+          <li>You have <strong>20 attempts</strong> per game.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="screen">
+    <div class="game-layout">
+
+      <!-- Main game column -->
+      <div class="game-main">
+        <div class="game-top">
+          <button id="back-btn" class="back-btn">← Change Series</button>
+          <div class="attempts-badge">Attempts: <span id="attempts-used">0</span> / 20</div>
+        </div>
+
+        <div class="guess-area">
+          <div class="input-row">
+            <div class="autocomplete-wrap">
+              <input type="text" id="guess-input" placeholder="Type character name…" autocomplete="off" />
+              <ul id="autocomplete-list" class="autocomplete-list hidden"></ul>
+            </div>
+            <button id="guess-btn">Guess</button>
+          </div>
+          <p id="guess-msg" class="guess-msg"></p>
+        </div>
+
+        <div class="table-wrap">
+          <table id="guess-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Series</th>
+                <th>Age</th>
+                <th>Height (cm)</th>
+                <th>Gender</th>
+                <th>Hair</th>
+                <th>Eyes</th>
+              </tr>
+            </thead>
+            <tbody id="guess-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Side panel: selected series -->
+      <div class="game-side">
+        <div class="side-panel">
+          <h3 class="side-title">Series in Pool</h3>
+          <ul id="game-series-list" class="game-series-list"></ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RESULT OVERLAY -->
+  <div id="result-overlay" class="result-overlay hidden">
+    <div class="result-card">
+      <div id="result-emoji" class="result-emoji"></div>
+      <h2 id="result-title"></h2>
+      <p id="result-sub"></p>
+      <div id="result-char" class="result-char"></div>
+      <button id="play-again-btn" class="start-btn">▶ Play Again</button>
+      <button id="change-series-btn" class="ctrl-btn">Change Series</button>
+    </div>
+  </div>
+
+</div>
+<script src="data.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
