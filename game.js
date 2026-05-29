@@ -121,14 +121,13 @@ const GENRES = [
 
 // ── GAME OPTIONS (persisted via localStorage-like object in memory) ────────
 var gameOptions = {
-  showSeriesInAC:    true,   // show "(Series)" label in autocomplete suggestions
-  searchBySeries:    false,  // allow typing a series name to filter characters
-  searchBoth:        false,  // match name OR series (supersedes searchBySeries alone)
-  hideSeriesCol:     false,  // hide the Series column in the guess table
-  hardMode:          false,  // 10 attempts instead of 20
+  showSeriesInAC:    true,
+  searchBySeries:    false,
+  searchBoth:        false,
+  hideSeriesCol:     false,
+  hardMode:          false,
 };
 
-// Try to load saved options from sessionStorage
 (function() {
   try {
     var saved = sessionStorage.getItem('anidle_options');
@@ -208,7 +207,6 @@ themeToggleBtn.addEventListener('click', function() {
 // ── OPTIONS MODAL ──────────────────────────────────────────────────────────
 
 function openOptions() {
-  // Sync checkboxes to current state
   document.getElementById('opt-show-series').checked     = gameOptions.showSeriesInAC;
   document.getElementById('opt-search-by-series').checked = gameOptions.searchBySeries;
   document.getElementById('opt-search-both').checked     = gameOptions.searchBoth;
@@ -234,10 +232,7 @@ optionsSave.addEventListener('click', function() {
   gameOptions.hideSeriesCol   = document.getElementById('opt-hide-series-col').checked;
   gameOptions.hardMode        = document.getElementById('opt-hard-mode').checked;
   saveOptions();
-
-  // Apply series column visibility immediately
   applySeriesColVisibility();
-
   closeOptions();
 });
 
@@ -342,14 +337,12 @@ function startGame() {
   guessMsg.textContent   = '';
   attemptsEl.textContent = '0';
 
-  // Update the attempts display to reflect hard mode setting
   var badge = document.querySelector('.attempts-badge');
   if (badge) badge.innerHTML = 'Attempts: <span id="attempts-used">0</span> / ' + maxAttempts();
   attemptsEl = document.getElementById('attempts-used');
 
   resultOverlay.classList.add('hidden');
 
-  // Populate side panel
   gameSeriesList.innerHTML = '';
   Array.from(selectedSeries).sort().forEach(function(s) {
     var li = document.createElement('li');
@@ -374,7 +367,6 @@ backBtn.addEventListener('click', function() { showScreen('setup'); });
 // ── AUTOCOMPLETE ───────────────────────────────────────────────────────────
 var acIndex = -1;
 
-// Returns filtered match list based on current options
 function getACMatches(q) {
   var guessed = getGuessedNames();
   return pool.filter(function(c) {
@@ -384,13 +376,10 @@ function getACMatches(q) {
     var seriesLower = c.series.toLowerCase();
 
     if (gameOptions.searchBoth) {
-      // Match if name OR series contains query
       return nameLower.includes(q) || seriesLower.includes(q);
     } else if (gameOptions.searchBySeries) {
-      // Only match by series name (still guesses by character name)
       return seriesLower.includes(q);
     } else {
-      // Default: match by character name only
       return nameLower.includes(q);
     }
   }).slice(0, 10);
@@ -411,7 +400,6 @@ guessInput.addEventListener('input', function() {
     li.dataset.name = c.name;
 
     if (gameOptions.showSeriesInAC) {
-      // Two-line layout: bold name + subtle series below
       var nameSpan   = document.createElement('span');
       nameSpan.className = 'ac-name';
       nameSpan.textContent = c.name;
@@ -453,7 +441,6 @@ guessInput.addEventListener('keydown', function(e) {
     }
   } else if (e.key === 'Enter') {
     if (acIndex >= 0 && items[acIndex]) {
-      // An item is highlighted — select it without submitting guess
       e.preventDefault();
       selectACItem(items[acIndex].dataset.name);
     } else {
@@ -463,21 +450,17 @@ guessInput.addEventListener('keydown', function(e) {
   } else if (e.key === 'Escape') {
     hideAC();
   } else if (e.key === 'Tab' && !acList.classList.contains('hidden')) {
-    // Tab completes the first suggestion
     e.preventDefault();
     if (items[0]) selectACItem(items[0].dataset.name);
   }
 });
 
-// Clicking the guess button always submits
 guessBtn.addEventListener('click', submitGuess);
 
-// Hide autocomplete when clicking outside the input area
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.autocomplete-wrap')) hideAC();
 });
 
-// Re-show autocomplete when re-focusing input (if there's text)
 guessInput.addEventListener('focus', function() {
   var q = guessInput.value.trim().toLowerCase();
   if (q) guessInput.dispatchEvent(new Event('input'));
@@ -624,19 +607,16 @@ buildGenreList();
 
 // ── CHALLENGE MODE ─────────────────────────────────────────────────────────
 // A "challenge" is a URL with a hash like:
-//   #challenge=<base64(JSON({n:"CharName",s:"SeriesName"}))>
+//   #challenge=<base64(JSON({n:"CharName",s:"SeriesName",pool:["S1","S2",...]}))>
 //
-// When the sender creates a challenge they:
-//   1. Pick a series (and optionally a specific character)
-//   2. Click "Create Challenge Link"
-//   3. Copy the link and send it to a friend
-//
-// When the receiver opens the link:
-//   - The game auto-selects the series
-//   - Sets the target to the chosen character
-//   - Skips straight to the game screen
+// The sender picks one or more series, optionally picks a specific character,
+// and generates a link. The receiver auto-starts the game with that exact
+// character as the target (pool = all selected series).
 
-// ── HTML for Challenge Modal (injected at runtime) ─────────────────────────
+// ── Track which series are selected in the challenge modal ─────────────────
+var challengeSelectedSeries = new Set();
+
+// ── Inject challenge modal HTML ────────────────────────────────────────────
 (function injectChallengeUI() {
   // Button next to Start Game
   var startRow = document.querySelector('.start-row');
@@ -649,53 +629,70 @@ buildGenreList();
     startRow.appendChild(btn);
   }
 
-  // Modal overlay
+  // Modal overlay — rebuilt with genre accordion + character picker
   var modal = document.createElement('div');
   modal.id = 'challenge-overlay';
   modal.className = 'options-overlay hidden';
   modal.innerHTML = [
     '<div class="options-card challenge-card">',
+
       '<div class="options-header">',
         '<h2 class="options-title">🔗 Challenge a Friend</h2>',
         '<button id="challenge-close" class="options-close">✕</button>',
       '</div>',
-      '<div class="options-body" id="challenge-body">',
-        '<p class="setup-sub" style="margin-bottom:12px">',
-          'Pick a series (and optionally a specific character), then copy the link.',
-          ' Your friend will be challenged to guess exactly that character!',
-        '</p>',
 
+      '<div class="options-body" style="gap:16px">',
+
+        // Step 1 – series picker
         '<div class="option-group">',
-          '<div class="option-group-label">Step 1 — Pick a Series</div>',
-          '<select id="ch-series-select" class="ch-select">',
-            '<option value="">— Choose a series —</option>',
-          '</select>',
+          '<div class="option-group-label">Step 1 — Pick series (one or more)</div>',
+          '<p class="setup-sub" style="margin-bottom:10px;font-size:.82rem">',
+            'Your friend\'s pool will contain all the series you select.',
+          '</p>',
+
+          // Series controls
+          '<div style="display:flex;gap:6px;margin-bottom:10px">',
+            '<button id="ch-select-all" class="ctrl-btn" style="font-size:.8rem;padding:5px 14px">Select All</button>',
+            '<button id="ch-clear-all"  class="ctrl-btn" style="font-size:.8rem;padding:5px 14px">Clear All</button>',
+          '</div>',
+
+          // Selected chips
+          '<div id="ch-selected-summary" class="ch-selected-summary"></div>',
+          '<p id="ch-series-count" class="setup-sub" style="font-size:.8rem;margin-bottom:8px">0 series selected</p>',
+
+          // Genre accordion (populated by JS)
+          '<div id="ch-genre-list" class="ch-genre-list"></div>',
         '</div>',
 
-        '<div class="option-group" id="ch-char-group" style="display:none">',
-          '<div class="option-group-label">Step 2 — Pick a Character (optional)</div>',
+        // Step 2 – character picker (shown after a series is selected)
+        '<div id="ch-char-section" class="option-group ch-char-section">',
+          '<div class="option-group-label">Step 2 — Pick a character (optional)</div>',
           '<select id="ch-char-select" class="ch-select">',
-            '<option value="">🎲 Random character from this series</option>',
+            '<option value="">🎲 Random character from selected series</option>',
           '</select>',
         '</div>',
 
-        '<div class="option-group" id="ch-link-group" style="display:none">',
-          '<div class="option-group-label">Step 3 — Your Challenge Link</div>',
+        // Step 3 – generated link
+        '<div id="ch-link-group" class="option-group" style="display:none">',
+          '<div class="option-group-label">Step 3 — Your challenge link</div>',
           '<div class="ch-link-row">',
             '<input type="text" id="ch-link-input" class="ch-link-input" readonly />',
             '<button id="ch-copy-btn" class="ctrl-btn">📋 Copy</button>',
           '</div>',
           '<p id="ch-copy-msg" class="guess-msg" style="margin-top:6px"></p>',
         '</div>',
+
       '</div>',
+
       '<div class="options-footer">',
         '<button id="ch-generate-btn" class="start-btn" disabled>Generate Link</button>',
       '</div>',
+
     '</div>',
   ].join('');
   document.getElementById('app').appendChild(modal);
 
-  // Also inject a small banner for when a challenge is received
+  // Challenge received banner
   var banner = document.createElement('div');
   banner.id = 'challenge-banner';
   banner.className = 'challenge-banner hidden';
@@ -707,42 +704,177 @@ buildGenreList();
   if (header) header.insertAdjacentElement('afterend', banner);
 })();
 
-// ── Challenge modal logic ──────────────────────────────────────────────────
+// ── Wire up challenge modal refs ───────────────────────────────────────────
 var challengeBtn     = document.getElementById('challenge-btn');
 var challengeOverlay = document.getElementById('challenge-overlay');
 var challengeClose   = document.getElementById('challenge-close');
-var chSeriesSelect   = document.getElementById('ch-series-select');
-var chCharGroup      = document.getElementById('ch-char-group');
+var chGenreListEl    = document.getElementById('ch-genre-list');
+var chSelectedSummary= document.getElementById('ch-selected-summary');
+var chSeriesCount    = document.getElementById('ch-series-count');
+var chCharSection    = document.getElementById('ch-char-section');
 var chCharSelect     = document.getElementById('ch-char-select');
 var chLinkGroup      = document.getElementById('ch-link-group');
 var chLinkInput      = document.getElementById('ch-link-input');
 var chCopyBtn        = document.getElementById('ch-copy-btn');
 var chCopyMsg        = document.getElementById('ch-copy-msg');
 var chGenerateBtn    = document.getElementById('ch-generate-btn');
+var chSelectAll      = document.getElementById('ch-select-all');
+var chClearAll       = document.getElementById('ch-clear-all');
 
-function openChallengeModal() {
-  // Populate series dropdown from whatever's in ANIME_DB
-  var allSeries = [];
-  ANIME_DB.forEach(function(c) {
-    if (!allSeries.includes(c.series)) allSeries.push(c.series);
+// ── Build the challenge genre accordion ────────────────────────────────────
+
+function buildChallengeGenreList() {
+  chGenreListEl.innerHTML = '';
+  GENRES.forEach(function(genre) {
+    var available = genre.series.filter(function(s) {
+      return ANIME_DB.some(function(c) { return c.series === s; });
+    });
+    if (!available.length) return;
+
+    var block = document.createElement('div');
+    block.className = 'ch-genre-block';
+
+    var header = document.createElement('button');
+    header.className = 'ch-genre-header';
+    header.innerHTML =
+      '<span class="ch-genre-label">' +
+        '<span class="ch-genre-icon">' + genre.icon + '</span>' +
+        genre.name +
+        '<span class="ch-genre-badge">' + available.length + ' series</span>' +
+      '</span>' +
+      '<span class="ch-genre-arrow">▼</span>';
+
+    var body = document.createElement('div');
+    body.className = 'ch-genre-body';
+
+    available.forEach(function(s) {
+      var tag = document.createElement('button');
+      tag.className = 'ch-series-tag' + (challengeSelectedSeries.has(s) ? ' selected' : '');
+      tag.textContent = s;
+      tag.dataset.series = s;
+      tag.addEventListener('click', function() { toggleChallengeSeriesTag(s, tag); });
+      body.appendChild(tag);
+    });
+
+    header.addEventListener('click', function() {
+      var isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      header.classList.toggle('open', !isOpen);
+    });
+
+    block.appendChild(header);
+    block.appendChild(body);
+    chGenreListEl.appendChild(block);
   });
-  allSeries.sort();
+}
 
-  chSeriesSelect.innerHTML = '<option value="">— Choose a series —</option>';
-  allSeries.forEach(function(s) {
-    var opt = document.createElement('option');
-    opt.value = s;
-    opt.textContent = s;
-    chSeriesSelect.appendChild(opt);
+function toggleChallengeSeriesTag(series, el) {
+  if (challengeSelectedSeries.has(series)) {
+    challengeSelectedSeries.delete(series);
+    el.classList.remove('selected');
+  } else {
+    challengeSelectedSeries.add(series);
+    el.classList.add('selected');
+  }
+  updateChallengeUI();
+}
+
+function updateChallengeUI() {
+  // Count label
+  var count = challengeSelectedSeries.size;
+  var totalChars = ANIME_DB.filter(function(c) { return challengeSelectedSeries.has(c.series); }).length;
+  chSeriesCount.textContent = count > 0
+    ? count + ' series selected (' + totalChars + ' characters)'
+    : '0 series selected';
+
+  // Chips row
+  chSelectedSummary.innerHTML = '';
+  Array.from(challengeSelectedSeries).sort().forEach(function(s) {
+    var chip = document.createElement('div');
+    chip.className = 'ch-selected-chip';
+    chip.innerHTML = '<span>' + s + '</span>' +
+      '<button class="ch-chip-remove" title="Remove" data-series="' + s.replace(/"/g,'&quot;') + '">×</button>';
+    chip.querySelector('.ch-chip-remove').addEventListener('click', function() {
+      challengeSelectedSeries.delete(s);
+      // un-highlight tag in accordion
+      var tag = chGenreListEl.querySelector('.ch-series-tag[data-series="' + s.replace(/"/g,'&quot;') + '"]');
+      if (tag) tag.classList.remove('selected');
+      updateChallengeUI();
+    });
+    chSelectedSummary.appendChild(chip);
   });
 
-  // Reset state
-  chCharGroup.style.display = 'none';
+  // Show/hide character picker
+  if (count > 0) {
+    chCharSection.classList.add('visible');
+    populateChallengeCharSelect();
+  } else {
+    chCharSection.classList.remove('visible');
+  }
+
+  // Reset link
   chLinkGroup.style.display = 'none';
   chCopyMsg.textContent = '';
-  chGenerateBtn.disabled = true;
-  chCharSelect.innerHTML = '<option value="">🎲 Random character from this series</option>';
 
+  // Enable generate button only if series selected
+  chGenerateBtn.disabled = count === 0;
+}
+
+function populateChallengeCharSelect() {
+  var chars = ANIME_DB.filter(function(c) { return challengeSelectedSeries.has(c.series); });
+  // Sort by series then name
+  chars.sort(function(a, b) {
+    if (a.series < b.series) return -1;
+    if (a.series > b.series) return 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  chCharSelect.innerHTML = '<option value="">🎲 Random character from selected series</option>';
+
+  // Group by series with optgroups
+  var seriesSeen = [];
+  chars.forEach(function(c) {
+    if (!seriesSeen.includes(c.series)) {
+      seriesSeen.push(c.series);
+    }
+  });
+  seriesSeen.forEach(function(s) {
+    var group = document.createElement('optgroup');
+    group.label = s;
+    chars.filter(function(c) { return c.series === s; }).forEach(function(c) {
+      var opt = document.createElement('option');
+      opt.value = c.name;
+      opt.textContent = c.name;
+      group.appendChild(opt);
+    });
+    chCharSelect.appendChild(group);
+  });
+}
+
+// ── Select all / clear all in challenge modal ──────────────────────────────
+chSelectAll.addEventListener('click', function() {
+  chGenreListEl.querySelectorAll('.ch-series-tag').forEach(function(tag) {
+    challengeSelectedSeries.add(tag.dataset.series);
+    tag.classList.add('selected');
+  });
+  updateChallengeUI();
+});
+
+chClearAll.addEventListener('click', function() {
+  challengeSelectedSeries.clear();
+  chGenreListEl.querySelectorAll('.ch-series-tag').forEach(function(tag) {
+    tag.classList.remove('selected');
+  });
+  updateChallengeUI();
+});
+
+// ── Open / close challenge modal ───────────────────────────────────────────
+
+function openChallengeModal() {
+  // Reset state
+  challengeSelectedSeries.clear();
+  buildChallengeGenreList();
+  updateChallengeUI();
   challengeOverlay.classList.remove('hidden');
 }
 
@@ -756,44 +888,28 @@ challengeOverlay.addEventListener('click', function(e) {
   if (!e.target.closest('.challenge-card')) closeChallengeModal();
 });
 
-chSeriesSelect.addEventListener('change', function() {
-  var series = chSeriesSelect.value;
-  chLinkGroup.style.display = 'none';
-  chCopyMsg.textContent = '';
-
-  if (!series) {
-    chCharGroup.style.display = 'none';
-    chGenerateBtn.disabled = true;
-    return;
-  }
-
-  // Populate characters for selected series
-  var chars = ANIME_DB.filter(function(c) { return c.series === series; });
-  chCharSelect.innerHTML = '<option value="">🎲 Random character from this series</option>';
-  chars.forEach(function(c) {
-    var opt = document.createElement('option');
-    opt.value = c.name;
-    opt.textContent = c.name;
-    chCharSelect.appendChild(opt);
-  });
-
-  chCharGroup.style.display = '';
-  chGenerateBtn.disabled = false;
-});
-
+// ── Generate link ──────────────────────────────────────────────────────────
 chGenerateBtn.addEventListener('click', function() {
-  var series = chSeriesSelect.value;
-  if (!series) return;
+  if (!challengeSelectedSeries.size) return;
 
   var charName = chCharSelect.value;
   if (!charName) {
-    // Pick a random character from the series
-    var chars = ANIME_DB.filter(function(c) { return c.series === series; });
+    // Pick a random character from the combined pool
+    var chars = ANIME_DB.filter(function(c) { return challengeSelectedSeries.has(c.series); });
     if (!chars.length) return;
-    charName = chars[Math.floor(Math.random() * chars.length)].name;
+    var chosen = chars[Math.floor(Math.random() * chars.length)];
+    charName = chosen.name;
   }
 
-  var payload = JSON.stringify({ n: charName, s: series });
+  // Find character to confirm it exists
+  var charObj = ANIME_DB.find(function(c) { return c.name === charName; });
+  if (!charObj) return;
+
+  var payload = JSON.stringify({
+    n:    charObj.name,
+    s:    charObj.series,
+    pool: Array.from(challengeSelectedSeries),
+  });
   var encoded = btoa(unescape(encodeURIComponent(payload)));
   var url = 'https://brinnykins7-hue.github.io/anidle/#challenge=' + encoded;
 
@@ -802,19 +918,17 @@ chGenerateBtn.addEventListener('click', function() {
   chCopyMsg.textContent = '';
 });
 
+// ── Copy link ──────────────────────────────────────────────────────────────
 chCopyBtn.addEventListener('click', function() {
   chLinkInput.select();
-  chLinkInput.setSelectionRange(0, 99999); // mobile support
+  chLinkInput.setSelectionRange(0, 99999);
   try {
     var ok = document.execCommand('copy');
     if (ok) {
       chCopyMsg.textContent = '✅ Copied! Send this link to your friend.';
       chCopyMsg.style.color = 'var(--green)';
-    } else {
-      throw new Error('execCommand failed');
-    }
+    } else { throw new Error(); }
   } catch(e) {
-    // Try modern clipboard API
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(chLinkInput.value).then(function() {
         chCopyMsg.textContent = '✅ Copied! Send this link to your friend.';
@@ -839,17 +953,17 @@ challengeBannerClose.addEventListener('click', function() {
   challengeBanner.classList.add('hidden');
 });
 
-// ── Read challenge from URL hash & auto-start ──────────────────────────────
+// ── Parse challenge hash ───────────────────────────────────────────────────
 function parseChallengeHash() {
   try {
-    var hash = window.location.hash; // e.g. "#challenge=eyJuIjoiTmFydXRvIFV6dW1ha2kifQ=="
+    var hash = window.location.hash;
     if (!hash || hash.indexOf('challenge=') === -1) return null;
     var encoded = hash.split('challenge=')[1];
     if (!encoded) return null;
     var json = decodeURIComponent(escape(atob(encoded)));
     var data = JSON.parse(json);
     if (!data.n || !data.s) return null;
-    return data; // { n: charName, s: seriesName }
+    return data; // { n, s, pool? }
   } catch(e) {
     return null;
   }
@@ -859,19 +973,22 @@ function startChallengeGame(data) {
   var char = ANIME_DB.find(function(c) {
     return c.name.toLowerCase() === data.n.toLowerCase() && c.series === data.s;
   });
+  if (!char) return false;
 
-  if (!char) {
-    // Character not found — fall back to normal mode silently
-    return false;
-  }
+  // Build the pool — use the provided pool list if present, else just the character's series
+  var poolSeries = (data.pool && Array.isArray(data.pool) && data.pool.length > 0)
+    ? data.pool
+    : [data.s];
 
-  // Select the series so the pool is correct
+  // Make sure the target's series is always in the pool
+  if (!poolSeries.includes(data.s)) poolSeries.push(data.s);
+
   selectedSeries.clear();
-  selectedSeries.add(data.s);
+  poolSeries.forEach(function(s) { selectedSeries.add(s); });
 
-  // Mark it in the UI too (series tag, if visible)
+  // Sync main setup UI tags
   document.querySelectorAll('.series-tag').forEach(function(tag) {
-    if (tag.dataset.series === data.s) {
+    if (selectedSeries.has(tag.dataset.series)) {
       tag.classList.add('selected');
     } else {
       tag.classList.remove('selected');
@@ -879,8 +996,7 @@ function startChallengeGame(data) {
   });
   updatePoolCount();
 
-  // Set up pool and override target
-  pool     = ANIME_DB.filter(function(c) { return c.series === data.s; });
+  pool     = ANIME_DB.filter(function(c) { return selectedSeries.has(c.series); });
   target   = char;
   attempts = 0;
   gameOver = false;
@@ -897,15 +1013,20 @@ function startChallengeGame(data) {
   resultOverlay.classList.add('hidden');
 
   gameSeriesList.innerHTML = '';
-  var li = document.createElement('li');
-  li.textContent = data.s;
-  gameSeriesList.appendChild(li);
+  Array.from(selectedSeries).sort().forEach(function(s) {
+    var li = document.createElement('li');
+    li.textContent = s;
+    gameSeriesList.appendChild(li);
+  });
 
   applySeriesColVisibility();
   showScreen('game');
 
-  // Show banner
-  challengeBannerText.textContent = '🎯 Challenge from a friend — guess the mystery ' + data.s + ' character! (1 series in pool)';
+  var seriesLabel = poolSeries.length === 1
+    ? poolSeries[0]
+    : poolSeries.length + ' series';
+  challengeBannerText.textContent =
+    '🎯 Challenge from a friend — guess the mystery character! (' + seriesLabel + ' in pool)';
   challengeBanner.classList.remove('hidden');
 
   guessInput.focus();
@@ -914,11 +1035,8 @@ function startChallengeGame(data) {
 
 // ── Init: check for challenge link on page load ────────────────────────────
 (function checkForChallenge() {
-  // Wait until buildGenreList has run (it's called synchronously above),
-  // then try to start challenge mode.
   var data = parseChallengeHash();
   if (data) {
-    // Small delay so all DOM is settled
     setTimeout(function() {
       var started = startChallengeGame(data);
       if (!started) {
