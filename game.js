@@ -621,3 +621,309 @@ resultOverlay.addEventListener('click', function(e) {
 
 // ── INIT ───────────────────────────────────────────────────────────────────
 buildGenreList();
+
+// ── CHALLENGE MODE ─────────────────────────────────────────────────────────
+// A "challenge" is a URL with a hash like:
+//   #challenge=<base64(JSON({n:"CharName",s:"SeriesName"}))>
+//
+// When the sender creates a challenge they:
+//   1. Pick a series (and optionally a specific character)
+//   2. Click "Create Challenge Link"
+//   3. Copy the link and send it to a friend
+//
+// When the receiver opens the link:
+//   - The game auto-selects the series
+//   - Sets the target to the chosen character
+//   - Skips straight to the game screen
+
+// ── HTML for Challenge Modal (injected at runtime) ─────────────────────────
+(function injectChallengeUI() {
+  // Button next to Start Game
+  var startRow = document.querySelector('.start-row');
+  if (startRow) {
+    var btn = document.createElement('button');
+    btn.id = 'challenge-btn';
+    btn.className = 'ctrl-btn challenge-create-btn';
+    btn.textContent = '🔗 Challenge a Friend';
+    btn.title = 'Create a link where you pick the character your friend has to guess';
+    startRow.appendChild(btn);
+  }
+
+  // Modal overlay
+  var modal = document.createElement('div');
+  modal.id = 'challenge-overlay';
+  modal.className = 'options-overlay hidden';
+  modal.innerHTML = [
+    '<div class="options-card challenge-card">',
+      '<div class="options-header">',
+        '<h2 class="options-title">🔗 Challenge a Friend</h2>',
+        '<button id="challenge-close" class="options-close">✕</button>',
+      '</div>',
+      '<div class="options-body" id="challenge-body">',
+        '<p class="setup-sub" style="margin-bottom:12px">',
+          'Pick a series (and optionally a specific character), then copy the link.',
+          ' Your friend will be challenged to guess exactly that character!',
+        '</p>',
+
+        '<div class="option-group">',
+          '<div class="option-group-label">Step 1 — Pick a Series</div>',
+          '<select id="ch-series-select" class="ch-select">',
+            '<option value="">— Choose a series —</option>',
+          '</select>',
+        '</div>',
+
+        '<div class="option-group" id="ch-char-group" style="display:none">',
+          '<div class="option-group-label">Step 2 — Pick a Character (optional)</div>',
+          '<select id="ch-char-select" class="ch-select">',
+            '<option value="">🎲 Random character from this series</option>',
+          '</select>',
+        '</div>',
+
+        '<div class="option-group" id="ch-link-group" style="display:none">',
+          '<div class="option-group-label">Step 3 — Your Challenge Link</div>',
+          '<div class="ch-link-row">',
+            '<input type="text" id="ch-link-input" class="ch-link-input" readonly />',
+            '<button id="ch-copy-btn" class="ctrl-btn">📋 Copy</button>',
+          '</div>',
+          '<p id="ch-copy-msg" class="guess-msg" style="margin-top:6px"></p>',
+        '</div>',
+      '</div>',
+      '<div class="options-footer">',
+        '<button id="ch-generate-btn" class="start-btn" disabled>Generate Link</button>',
+      '</div>',
+    '</div>',
+  ].join('');
+  document.getElementById('app').appendChild(modal);
+
+  // Also inject a small banner for when a challenge is received
+  var banner = document.createElement('div');
+  banner.id = 'challenge-banner';
+  banner.className = 'challenge-banner hidden';
+  banner.innerHTML = [
+    '<span id="challenge-banner-text">🎯 Challenge mode: guess the mystery character!</span>',
+    '<button id="challenge-banner-close" class="options-close" style="margin-left:auto">✕</button>',
+  ].join('');
+  var header = document.querySelector('header');
+  if (header) header.insertAdjacentElement('afterend', banner);
+})();
+
+// ── Challenge modal logic ──────────────────────────────────────────────────
+var challengeBtn     = document.getElementById('challenge-btn');
+var challengeOverlay = document.getElementById('challenge-overlay');
+var challengeClose   = document.getElementById('challenge-close');
+var chSeriesSelect   = document.getElementById('ch-series-select');
+var chCharGroup      = document.getElementById('ch-char-group');
+var chCharSelect     = document.getElementById('ch-char-select');
+var chLinkGroup      = document.getElementById('ch-link-group');
+var chLinkInput      = document.getElementById('ch-link-input');
+var chCopyBtn        = document.getElementById('ch-copy-btn');
+var chCopyMsg        = document.getElementById('ch-copy-msg');
+var chGenerateBtn    = document.getElementById('ch-generate-btn');
+
+function openChallengeModal() {
+  // Populate series dropdown from whatever's in ANIME_DB
+  var allSeries = [];
+  ANIME_DB.forEach(function(c) {
+    if (!allSeries.includes(c.series)) allSeries.push(c.series);
+  });
+  allSeries.sort();
+
+  chSeriesSelect.innerHTML = '<option value="">— Choose a series —</option>';
+  allSeries.forEach(function(s) {
+    var opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s;
+    chSeriesSelect.appendChild(opt);
+  });
+
+  // Reset state
+  chCharGroup.style.display = 'none';
+  chLinkGroup.style.display = 'none';
+  chCopyMsg.textContent = '';
+  chGenerateBtn.disabled = true;
+  chCharSelect.innerHTML = '<option value="">🎲 Random character from this series</option>';
+
+  challengeOverlay.classList.remove('hidden');
+}
+
+function closeChallengeModal() {
+  challengeOverlay.classList.add('hidden');
+}
+
+challengeBtn.addEventListener('click', openChallengeModal);
+challengeClose.addEventListener('click', closeChallengeModal);
+challengeOverlay.addEventListener('click', function(e) {
+  if (!e.target.closest('.challenge-card')) closeChallengeModal();
+});
+
+chSeriesSelect.addEventListener('change', function() {
+  var series = chSeriesSelect.value;
+  chLinkGroup.style.display = 'none';
+  chCopyMsg.textContent = '';
+
+  if (!series) {
+    chCharGroup.style.display = 'none';
+    chGenerateBtn.disabled = true;
+    return;
+  }
+
+  // Populate characters for selected series
+  var chars = ANIME_DB.filter(function(c) { return c.series === series; });
+  chCharSelect.innerHTML = '<option value="">🎲 Random character from this series</option>';
+  chars.forEach(function(c) {
+    var opt = document.createElement('option');
+    opt.value = c.name;
+    opt.textContent = c.name;
+    chCharSelect.appendChild(opt);
+  });
+
+  chCharGroup.style.display = '';
+  chGenerateBtn.disabled = false;
+});
+
+chGenerateBtn.addEventListener('click', function() {
+  var series = chSeriesSelect.value;
+  if (!series) return;
+
+  var charName = chCharSelect.value;
+  if (!charName) {
+    // Pick a random character from the series
+    var chars = ANIME_DB.filter(function(c) { return c.series === series; });
+    if (!chars.length) return;
+    charName = chars[Math.floor(Math.random() * chars.length)].name;
+  }
+
+  var payload = JSON.stringify({ n: charName, s: series });
+  var encoded = btoa(unescape(encodeURIComponent(payload)));
+  var url = 'https://brinnykins7-hue.github.io/anidle/#challenge=' + encoded;
+
+  chLinkInput.value = url;
+  chLinkGroup.style.display = '';
+  chCopyMsg.textContent = '';
+});
+
+chCopyBtn.addEventListener('click', function() {
+  chLinkInput.select();
+  chLinkInput.setSelectionRange(0, 99999); // mobile support
+  try {
+    var ok = document.execCommand('copy');
+    if (ok) {
+      chCopyMsg.textContent = '✅ Copied! Send this link to your friend.';
+      chCopyMsg.style.color = 'var(--green)';
+    } else {
+      throw new Error('execCommand failed');
+    }
+  } catch(e) {
+    // Try modern clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(chLinkInput.value).then(function() {
+        chCopyMsg.textContent = '✅ Copied! Send this link to your friend.';
+        chCopyMsg.style.color = 'var(--green)';
+      }).catch(function() {
+        chCopyMsg.textContent = '⚠️ Auto-copy failed — please copy the link manually.';
+        chCopyMsg.style.color = 'var(--yellow)';
+      });
+    } else {
+      chCopyMsg.textContent = '⚠️ Auto-copy failed — please copy the link manually.';
+      chCopyMsg.style.color = 'var(--yellow)';
+    }
+  }
+});
+
+// ── Challenge banner (receiver side) ──────────────────────────────────────
+var challengeBanner      = document.getElementById('challenge-banner');
+var challengeBannerText  = document.getElementById('challenge-banner-text');
+var challengeBannerClose = document.getElementById('challenge-banner-close');
+
+challengeBannerClose.addEventListener('click', function() {
+  challengeBanner.classList.add('hidden');
+});
+
+// ── Read challenge from URL hash & auto-start ──────────────────────────────
+function parseChallengeHash() {
+  try {
+    var hash = window.location.hash; // e.g. "#challenge=eyJuIjoiTmFydXRvIFV6dW1ha2kifQ=="
+    if (!hash || hash.indexOf('challenge=') === -1) return null;
+    var encoded = hash.split('challenge=')[1];
+    if (!encoded) return null;
+    var json = decodeURIComponent(escape(atob(encoded)));
+    var data = JSON.parse(json);
+    if (!data.n || !data.s) return null;
+    return data; // { n: charName, s: seriesName }
+  } catch(e) {
+    return null;
+  }
+}
+
+function startChallengeGame(data) {
+  var char = ANIME_DB.find(function(c) {
+    return c.name.toLowerCase() === data.n.toLowerCase() && c.series === data.s;
+  });
+
+  if (!char) {
+    // Character not found — fall back to normal mode silently
+    return false;
+  }
+
+  // Select the series so the pool is correct
+  selectedSeries.clear();
+  selectedSeries.add(data.s);
+
+  // Mark it in the UI too (series tag, if visible)
+  document.querySelectorAll('.series-tag').forEach(function(tag) {
+    if (tag.dataset.series === data.s) {
+      tag.classList.add('selected');
+    } else {
+      tag.classList.remove('selected');
+    }
+  });
+  updatePoolCount();
+
+  // Set up pool and override target
+  pool     = ANIME_DB.filter(function(c) { return c.series === data.s; });
+  target   = char;
+  attempts = 0;
+  gameOver = false;
+
+  guessTbody.innerHTML   = '';
+  guessInput.value       = '';
+  guessMsg.textContent   = '';
+  attemptsEl.textContent = '0';
+
+  var badge = document.querySelector('.attempts-badge');
+  if (badge) badge.innerHTML = 'Attempts: <span id="attempts-used">0</span> / ' + maxAttempts();
+  attemptsEl = document.getElementById('attempts-used');
+
+  resultOverlay.classList.add('hidden');
+
+  gameSeriesList.innerHTML = '';
+  var li = document.createElement('li');
+  li.textContent = data.s;
+  gameSeriesList.appendChild(li);
+
+  applySeriesColVisibility();
+  showScreen('game');
+
+  // Show banner
+  challengeBannerText.textContent = '🎯 Challenge from a friend — guess the mystery ' + data.s + ' character! (1 series in pool)';
+  challengeBanner.classList.remove('hidden');
+
+  guessInput.focus();
+  return true;
+}
+
+// ── Init: check for challenge link on page load ────────────────────────────
+(function checkForChallenge() {
+  // Wait until buildGenreList has run (it's called synchronously above),
+  // then try to start challenge mode.
+  var data = parseChallengeHash();
+  if (data) {
+    // Small delay so all DOM is settled
+    setTimeout(function() {
+      var started = startChallengeGame(data);
+      if (!started) {
+        console.warn('ANIDLE: challenge character not found:', data);
+      }
+    }, 50);
+  }
+})();
