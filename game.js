@@ -1,6 +1,7 @@
 // ── ANIDLE GAME LOGIC ─────────────────────────────────────────────────────
 
-const MAX_ATTEMPTS = 20;
+const MAX_ATTEMPTS_NORMAL = 20;
+const MAX_ATTEMPTS_HARD   = 10;
 
 // Genre → series mapping
 const GENRES = [
@@ -16,51 +17,147 @@ const GENRES = [
   { icon: "🕵️",  name: "Spy / Action 2",           series: ["Spy x Family","Assassination Classroom"] },
 ];
 
-let target      = null;
-let attempts    = 0;
-let gameOver    = false;
-let selectedSeries = new Set();
-let pool        = [];
+// ── GAME OPTIONS (persisted via localStorage-like object in memory) ────────
+var gameOptions = {
+  showSeriesInAC:    true,   // show "(Series)" label in autocomplete suggestions
+  searchBySeries:    false,  // allow typing a series name to filter characters
+  searchBoth:        false,  // match name OR series (supersedes searchBySeries alone)
+  hideSeriesCol:     false,  // hide the Series column in the guess table
+  hardMode:          false,  // 10 attempts instead of 20
+};
 
-// ─── DOM ──────────────────────────────────────────────────────────────────
-const setupScreen  = document.getElementById('setup-screen');
-const gameScreen   = document.getElementById('game-screen');
-const genreListEl  = document.getElementById('genre-list');
-const poolCount    = document.getElementById('pool-count');
-const startBtn     = document.getElementById('start-btn');
-const selectAllBtn = document.getElementById('select-all-btn');
-const clearAllBtn  = document.getElementById('clear-all-btn');
+// Try to load saved options from sessionStorage
+(function() {
+  try {
+    var saved = sessionStorage.getItem('anidle_options');
+    if (saved) { Object.assign(gameOptions, JSON.parse(saved)); }
+  } catch(e) {}
+})();
 
-const guessInput  = document.getElementById('guess-input');
-const guessBtn    = document.getElementById('guess-btn');
-const acList      = document.getElementById('autocomplete-list');
-const guessTbody  = document.getElementById('guess-tbody');
-const attemptsEl  = document.getElementById('attempts-used');
-const guessMsg    = document.getElementById('guess-msg');
-const backBtn     = document.getElementById('back-btn');
-const gameSeriesList = document.getElementById('game-series-list');
+function saveOptions() {
+  try { sessionStorage.setItem('anidle_options', JSON.stringify(gameOptions)); } catch(e) {}
+}
 
-const resultOverlay   = document.getElementById('result-overlay');
-const resultEmoji     = document.getElementById('result-emoji');
-const resultTitle     = document.getElementById('result-title');
-const resultSub       = document.getElementById('result-sub');
-const resultChar      = document.getElementById('result-char');
-const playAgainBtn    = document.getElementById('play-again-btn');
-const changeSeriesBtn = document.getElementById('change-series-btn');
+function maxAttempts() {
+  return gameOptions.hardMode ? MAX_ATTEMPTS_HARD : MAX_ATTEMPTS_NORMAL;
+}
 
-// ─── BUILD GENRE ACCORDION ────────────────────────────────────────────────
+// ── GAME STATE ─────────────────────────────────────────────────────────────
+var target         = null;
+var attempts       = 0;
+var gameOver       = false;
+var selectedSeries = new Set();
+var pool           = [];
+
+// ── DOM ────────────────────────────────────────────────────────────────────
+var setupScreen  = document.getElementById('setup-screen');
+var gameScreen   = document.getElementById('game-screen');
+var genreListEl  = document.getElementById('genre-list');
+var poolCount    = document.getElementById('pool-count');
+var startBtn     = document.getElementById('start-btn');
+var selectAllBtn = document.getElementById('select-all-btn');
+var clearAllBtn  = document.getElementById('clear-all-btn');
+
+var guessInput   = document.getElementById('guess-input');
+var guessBtn     = document.getElementById('guess-btn');
+var acList       = document.getElementById('autocomplete-list');
+var guessTbody   = document.getElementById('guess-tbody');
+var attemptsEl   = document.getElementById('attempts-used');
+var guessMsg     = document.getElementById('guess-msg');
+var backBtn      = document.getElementById('back-btn');
+var gameSeriesList = document.getElementById('game-series-list');
+
+var resultOverlay   = document.getElementById('result-overlay');
+var resultEmoji     = document.getElementById('result-emoji');
+var resultTitle     = document.getElementById('result-title');
+var resultSub       = document.getElementById('result-sub');
+var resultChar      = document.getElementById('result-char');
+var playAgainBtn    = document.getElementById('play-again-btn');
+var changeSeriesBtn = document.getElementById('change-series-btn');
+
+var optionsOverlay = document.getElementById('options-overlay');
+var optionsBtn     = document.getElementById('options-btn');
+var optionsClose   = document.getElementById('options-close');
+var optionsSave    = document.getElementById('options-save');
+
+var themeToggleBtn = document.getElementById('theme-toggle');
+var themeIcon      = themeToggleBtn.querySelector('.theme-icon');
+
+// ── THEME ──────────────────────────────────────────────────────────────────
+
+var currentTheme = 'dark';
+try {
+  var saved = sessionStorage.getItem('anidle_theme');
+  if (saved === 'light' || saved === 'dark') currentTheme = saved;
+} catch(e) {}
+
+function applyTheme(theme) {
+  currentTheme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+  try { sessionStorage.setItem('anidle_theme', theme); } catch(e) {}
+}
+applyTheme(currentTheme);
+
+themeToggleBtn.addEventListener('click', function() {
+  applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+});
+
+// ── OPTIONS MODAL ──────────────────────────────────────────────────────────
+
+function openOptions() {
+  // Sync checkboxes to current state
+  document.getElementById('opt-show-series').checked     = gameOptions.showSeriesInAC;
+  document.getElementById('opt-search-by-series').checked = gameOptions.searchBySeries;
+  document.getElementById('opt-search-both').checked     = gameOptions.searchBoth;
+  document.getElementById('opt-hide-series-col').checked = gameOptions.hideSeriesCol;
+  document.getElementById('opt-hard-mode').checked       = gameOptions.hardMode;
+  optionsOverlay.classList.remove('hidden');
+}
+
+function closeOptions() {
+  optionsOverlay.classList.add('hidden');
+}
+
+optionsBtn.addEventListener('click', openOptions);
+optionsClose.addEventListener('click', closeOptions);
+optionsOverlay.addEventListener('click', function(e) {
+  if (!e.target.closest('.options-card')) closeOptions();
+});
+
+optionsSave.addEventListener('click', function() {
+  gameOptions.showSeriesInAC  = document.getElementById('opt-show-series').checked;
+  gameOptions.searchBySeries  = document.getElementById('opt-search-by-series').checked;
+  gameOptions.searchBoth      = document.getElementById('opt-search-both').checked;
+  gameOptions.hideSeriesCol   = document.getElementById('opt-hide-series-col').checked;
+  gameOptions.hardMode        = document.getElementById('opt-hard-mode').checked;
+  saveOptions();
+
+  // Apply series column visibility immediately
+  applySeriesColVisibility();
+
+  closeOptions();
+});
+
+function applySeriesColVisibility() {
+  var gameMain = document.querySelector('.game-main');
+  if (gameMain) {
+    gameMain.classList.toggle('hide-series-col', gameOptions.hideSeriesCol);
+  }
+}
+
+// ── BUILD GENRE ACCORDION ──────────────────────────────────────────────────
 
 function buildGenreList() {
   genreListEl.innerHTML = '';
-  GENRES.forEach(function(genre, gi) {
-    var block = document.createElement('div');
-    block.className = 'genre-block';
-
-    // Count how many in this genre are in DB
+  GENRES.forEach(function(genre) {
     var available = genre.series.filter(function(s) {
       return ANIME_DB.some(function(c) { return c.series === s; });
     });
     if (!available.length) return;
+
+    var block = document.createElement('div');
+    block.className = 'genre-block';
 
     var header = document.createElement('button');
     header.className = 'genre-header';
@@ -130,7 +227,7 @@ clearAllBtn.addEventListener('click', function() {
 
 startBtn.addEventListener('click', startGame);
 
-// ─── GAME START ───────────────────────────────────────────────────────────
+// ── GAME START ─────────────────────────────────────────────────────────────
 
 function startGame() {
   pool     = ANIME_DB.filter(function(c) { return selectedSeries.has(c.series); });
@@ -142,6 +239,12 @@ function startGame() {
   guessInput.value       = '';
   guessMsg.textContent   = '';
   attemptsEl.textContent = '0';
+
+  // Update the attempts display to reflect hard mode setting
+  var badge = document.querySelector('.attempts-badge');
+  if (badge) badge.innerHTML = 'Attempts: <span id="attempts-used">0</span> / ' + maxAttempts();
+  attemptsEl = document.getElementById('attempts-used');
+
   resultOverlay.classList.add('hidden');
 
   // Populate side panel
@@ -152,6 +255,7 @@ function startGame() {
     gameSeriesList.appendChild(li);
   });
 
+  applySeriesColVisibility();
   showScreen('game');
   guessInput.focus();
 }
@@ -165,30 +269,64 @@ function showScreen(name) {
 
 backBtn.addEventListener('click', function() { showScreen('setup'); });
 
-// ─── AUTOCOMPLETE ─────────────────────────────────────────────────────────
+// ── AUTOCOMPLETE ───────────────────────────────────────────────────────────
 var acIndex = -1;
+
+// Returns filtered match list based on current options
+function getACMatches(q) {
+  var guessed = getGuessedNames();
+  return pool.filter(function(c) {
+    if (guessed.includes(c.name.toLowerCase())) return false;
+
+    var nameLower   = c.name.toLowerCase();
+    var seriesLower = c.series.toLowerCase();
+
+    if (gameOptions.searchBoth) {
+      // Match if name OR series contains query
+      return nameLower.includes(q) || seriesLower.includes(q);
+    } else if (gameOptions.searchBySeries) {
+      // Only match by series name (still guesses by character name)
+      return seriesLower.includes(q);
+    } else {
+      // Default: match by character name only
+      return nameLower.includes(q);
+    }
+  }).slice(0, 10);
+}
 
 guessInput.addEventListener('input', function() {
   var q = guessInput.value.trim().toLowerCase();
   if (!q) { hideAC(); return; }
 
-  var guessed = getGuessedNames();
-  var matches = pool.filter(function(c) {
-    return c.name.toLowerCase().includes(q) && !guessed.includes(c.name.toLowerCase());
-  }).slice(0, 8);
-
+  var matches = getACMatches(q);
   if (!matches.length) { hideAC(); return; }
 
   acList.innerHTML = '';
   acIndex = -1;
+
   matches.forEach(function(c) {
     var li = document.createElement('li');
-    li.textContent = c.name + ' (' + c.series + ')';
     li.dataset.name = c.name;
+
+    if (gameOptions.showSeriesInAC) {
+      // Two-line layout: bold name + subtle series below
+      var nameSpan   = document.createElement('span');
+      nameSpan.className = 'ac-name';
+      nameSpan.textContent = c.name;
+
+      var seriesSpan = document.createElement('span');
+      seriesSpan.className = 'ac-series';
+      seriesSpan.textContent = c.series;
+
+      li.appendChild(nameSpan);
+      li.appendChild(seriesSpan);
+    } else {
+      li.textContent = c.name;
+    }
+
     li.addEventListener('mousedown', function(e) {
       e.preventDefault();
-      guessInput.value = c.name;
-      hideAC();
+      selectACItem(c.name);
     });
     acList.appendChild(li);
   });
@@ -201,20 +339,53 @@ guessInput.addEventListener('keydown', function(e) {
     e.preventDefault();
     acIndex = Math.min(acIndex + 1, items.length - 1);
     items.forEach(function(li, i) { li.classList.toggle('active', i === acIndex); });
-    if (items[acIndex]) guessInput.value = items[acIndex].dataset.name;
+    if (items[acIndex]) {
+      guessInput.value = items[acIndex].dataset.name;
+    }
   } else if (e.key === 'ArrowUp') {
     e.preventDefault();
     acIndex = Math.max(acIndex - 1, -1);
     items.forEach(function(li, i) { li.classList.toggle('active', i === acIndex); });
-    if (acIndex >= 0 && items[acIndex]) guessInput.value = items[acIndex].dataset.name;
-  } else if (e.key === 'Enter') { hideAC(); submitGuess(); }
-    else if (e.key === 'Escape') { hideAC(); }
+    if (acIndex >= 0 && items[acIndex]) {
+      guessInput.value = items[acIndex].dataset.name;
+    }
+  } else if (e.key === 'Enter') {
+    if (acIndex >= 0 && items[acIndex]) {
+      // An item is highlighted — select it without submitting guess
+      e.preventDefault();
+      selectACItem(items[acIndex].dataset.name);
+    } else {
+      hideAC();
+      submitGuess();
+    }
+  } else if (e.key === 'Escape') {
+    hideAC();
+  } else if (e.key === 'Tab' && !acList.classList.contains('hidden')) {
+    // Tab completes the first suggestion
+    e.preventDefault();
+    if (items[0]) selectACItem(items[0].dataset.name);
+  }
 });
 
+// Clicking the guess button always submits
 guessBtn.addEventListener('click', submitGuess);
+
+// Hide autocomplete when clicking outside the input area
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.autocomplete-wrap')) hideAC();
 });
+
+// Re-show autocomplete when re-focusing input (if there's text)
+guessInput.addEventListener('focus', function() {
+  var q = guessInput.value.trim().toLowerCase();
+  if (q) guessInput.dispatchEvent(new Event('input'));
+});
+
+function selectACItem(name) {
+  guessInput.value = name;
+  hideAC();
+  guessInput.focus();
+}
 
 function hideAC() { acList.classList.add('hidden'); acIndex = -1; }
 
@@ -224,7 +395,7 @@ function getGuessedNames() {
   });
 }
 
-// ─── GUESS LOGIC ──────────────────────────────────────────────────────────
+// ── GUESS LOGIC ────────────────────────────────────────────────────────────
 
 function submitGuess() {
   if (gameOver) return;
@@ -232,7 +403,10 @@ function submitGuess() {
   if (!raw) { guessMsg.textContent = 'Type a character name first.'; return; }
 
   var guess = pool.find(function(c) { return c.name.toLowerCase() === raw.toLowerCase(); });
-  if (!guess) { guessMsg.textContent = '"' + raw + '" not found. Try the autocomplete list.'; return; }
+  if (!guess) {
+    guessMsg.textContent = '"' + raw + '" not found in pool — pick from the autocomplete list.';
+    return;
+  }
 
   if (getGuessedNames().includes(guess.name.toLowerCase())) {
     guessMsg.textContent = 'Already guessed that character!'; return;
@@ -246,7 +420,7 @@ function submitGuess() {
   renderRow(guess);
 
   var won = guess.name.toLowerCase() === target.name.toLowerCase();
-  if (won || attempts >= MAX_ATTEMPTS) {
+  if (won || attempts >= maxAttempts()) {
     gameOver = true;
     setTimeout(function() { showResult(won); }, 500);
   }
@@ -284,9 +458,9 @@ function makeCell(text, cls) {
 
 function colorFor(field, guess) {
   switch (field) {
-    case 'name':    return guess.name.toLowerCase() === target.name.toLowerCase() ? 'cell-green' : 'cell-red';
-    case 'series':  return guess.series === target.series ? 'cell-green' : 'cell-red';
-    case 'gender':  return guess.gender === target.gender ? 'cell-green' : 'cell-red';
+    case 'name':   return guess.name.toLowerCase() === target.name.toLowerCase() ? 'cell-green' : 'cell-red';
+    case 'series': return guess.series === target.series ? 'cell-green' : 'cell-red';
+    case 'gender': return guess.gender === target.gender ? 'cell-green' : 'cell-red';
     case 'age': case 'height': {
       var gv = guess[field], tv = target[field];
       if (gv === tv) return 'cell-green';
@@ -309,7 +483,7 @@ function arrowFor(gv, tv) {
   return gv < tv ? ' ↑' : ' ↓';
 }
 
-// ─── RESULT ───────────────────────────────────────────────────────────────
+// ── RESULT ─────────────────────────────────────────────────────────────────
 
 function showResult(won) {
   resultEmoji.textContent = won ? '🎉' : '💀';
@@ -337,12 +511,11 @@ changeSeriesBtn.addEventListener('click', function() {
   showScreen('setup');
 });
 
-// Click outside the card to dismiss overlay and return to game board
 resultOverlay.addEventListener('click', function(e) {
   if (!e.target.closest('.result-card')) {
     resultOverlay.classList.add('hidden');
   }
 });
 
-// ─── INIT ─────────────────────────────────────────────────────────────────
+// ── INIT ───────────────────────────────────────────────────────────────────
 buildGenreList();
