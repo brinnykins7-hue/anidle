@@ -5,16 +5,118 @@ const MAX_ATTEMPTS_HARD   = 10;
 
 // Genre → series mapping
 const GENRES = [
-  { icon: "🏔️",  name: "Peak",                     series: ["Attack on Titan","86","Fullmetal Alchemist","Steins;Gate","Vinland Saga","Frieren","Hunter x Hunter","Cowboy Bebop","Gintama","Berserk"] },
-  { icon: "⚔️",  name: "Action / Shonen",           series: ["Naruto","One Piece","Dragon Ball Z","Dragon Ball Super","Bleach","Black Clover","Fairy Tail","One Punch Man","Haikyuu","Blue Lock","Assassination Classroom","Akame ga Kill","Gurren Lagann","Rurouni Kenshin","Shaman King","Zatch Bell","Blue Exorcist","Bungo Stray Dogs","Black Lagoon","Inuyasha","Demon Slayer","Jujutsu Kaisen","My Hero Academia","Chainsaw Man","Sword Art Online","Samurai Champloo","Yu Yu Hakusho","D.Gray-man","Soul Eater","Katekyo Hitman Reborn","Fullmetal Alchemist: Brotherhood"] },
-  { icon: "🔮",  name: "Psychological / Thriller",  series: ["Death Note","Code Geass","Evangelion","Classroom of the Elite","Mob Psycho 100","The Promised Neverland","Durarara","Kakegurui","Psycho-Pass","Erased","Banana Fish","Great Pretender","Devilman Crybaby","Monster","Paranoia Agent","Serial Experiments Lain"] },
-  { icon: "🌀",  name: "Isekai / Fantasy",          series: ["Re:Zero","Overlord","KonoSuba","Shield Hero","Mushoku Tensei","That Time I Got Reincarnated as a Slime","No Game No Life","DanMachi","Miss Kobayashi's Dragon Maid","Is This a Zombie?","Spirited Away","Princess Mononoke","Nausicaä","Castle in the Sky","Log Horizon","Sword Art Online","Tanya the Evil","The Rising of the Shield Hero"] },
-  { icon: "💖",  name: "Romance / Slice of Life",   series: ["Toradora","Your Lie in April","Kaguya-sama","OreGairu","Violet Evergarden","Bocchi the Rock","Clannad","Fruits Basket","Ouran Host Club","Nana","Skip and Loafer","Angel Beats","Natsume's Book of Friends","Anohana","A Silent Voice","Weathering With You","Horimiya","Rent-a-Girlfriend","Oregairu","March Comes in Like a Lion"] },
-  { icon: "🦹",  name: "Superhero / Sci-Fi",        series: ["My Hero Academia","Dr. Stone","Seraph of the End","Darling in the FranXX","Ghost in the Shell","The Melancholy of Haruhi Suzumiya","Gurren Lagann","Trigun","Outlaw Star","Space Dandy","Tengen Toppa","Promare"] },
-  { icon: "⚙️",  name: "Dark / Horror",             series: ["Tokyo Ghoul","Black Butler","Made in Abyss","Goblin Slayer","Dororo","Hellsing","Claymore","Elfen Lied","Higurashi","Shiki","Corpse Party","Another","Blood+","Deadman Wonderland"] },
-  { icon: "🥷",  name: "Adventure / Fantasy",       series: ["Demon Slayer","Jujutsu Kaisen","Food Wars","Golden Kamuy","Magi","Fairy Tail","Black Clover","The Seven Deadly Sins","Nanatsu no Taizai","Radiant","Dungeon Meshi","Delicious in Dungeon"] },
-  { icon: "🎭",  name: "Drama / Other",             series: ["Tokyo Revengers","Oshi no Ko","Sailor Moon","Cardcaptor Sakura","Slam Dunk","Hajime no Ippo","Captain Tsubasa","Initial D","Paradise Kiss","Nichijou","Azumanga Daioh","K-On!","Lucky Star","Yuru Camp","Laid-Back Camp","Odd Taxi","Ping Pong the Animation"] },
-  { icon: "🕵️",  name: "Spy / Action 2",           series: ["Spy x Family","Assassination Classroom"] },
+  // ── The undisputed GOATs ───────────────────────────────────────────────────
+  { icon: "🏔️",  name: "Peak",
+    series: [
+      "Attack on Titan", "86", "Fullmetal Alchemist", "Steins;Gate",
+      "Vinland Saga", "Frieren", "Hunter x Hunter", "Cowboy Bebop",
+      "Gintama", "Berserk",
+    ]
+  },
+
+  // ── Punches, powers, and power-ups ────────────────────────────────────────
+  { icon: "⚔️",  name: "Action / Shonen",
+    series: [
+      "Naruto", "One Piece", "Dragon Ball Z", "Dragon Ball Super",
+      "Bleach", "Black Clover", "Fairy Tail", "One Punch Man",
+      "Assassination Classroom", "Akame ga Kill", "Gurren Lagann",
+      "Rurouni Kenshin", "Shaman King", "Zatch Bell", "Blue Exorcist",
+      "Bungo Stray Dogs", "Black Lagoon", "Inuyasha", "Demon Slayer",
+      "Jujutsu Kaisen", "My Hero Academia", "Chainsaw Man",
+      "Sword Art Online", "Samurai Champloo", "Yu Yu Hakusho",
+      "D.Gray-man", "Soul Eater", "Katekyo Hitman Reborn",
+      "Fullmetal Alchemist: Brotherhood",
+    ]
+  },
+
+  // ── Mind games and dark twists ─────────────────────────────────────────────
+  { icon: "🔮",  name: "Psychological / Thriller",
+    series: [
+      "Death Note", "Code Geass", "Evangelion", "Classroom of the Elite",
+      "Mob Psycho 100", "The Promised Neverland", "Durarara", "Kakegurui",
+      "Psycho-Pass", "Erased", "Banana Fish", "Great Pretender",
+      "Devilman Crybaby", "Monster", "Paranoia Agent", "Serial Experiments Lain",
+    ]
+  },
+
+  // ── Other worlds, other lives ──────────────────────────────────────────────
+  { icon: "🌀",  name: "Isekai / Fantasy",
+    series: [
+      "Re:Zero", "Overlord", "KonoSuba", "Shield Hero", "Mushoku Tensei",
+      "That Time I Got Reincarnated as a Slime", "No Game No Life",
+      "DanMachi", "Miss Kobayashi's Dragon Maid", "Is This a Zombie?",
+      "Spirited Away", "Princess Mononoke", "Nausicaä", "Castle in the Sky",
+      "Log Horizon", "Tanya the Evil", "The Rising of the Shield Hero",
+    ]
+  },
+
+  // ── Love, life, and feelings ───────────────────────────────────────────────
+  { icon: "💖",  name: "Romance / Slice of Life",
+    series: [
+      "Toradora", "Your Lie in April", "Kaguya-sama", "OreGairu",
+      "Violet Evergarden", "Bocchi the Rock", "Clannad", "Fruits Basket",
+      "Ouran Host Club", "Nana", "Skip and Loafer", "Angel Beats",
+      "Natsume's Book of Friends", "Anohana", "A Silent Voice",
+      "Weathering With You", "Horimiya", "Rent-a-Girlfriend",
+      "March Comes in Like a Lion",
+    ]
+  },
+
+  // ── Heroes, mechs, and future tech ────────────────────────────────────────
+  { icon: "🦹",  name: "Superhero / Sci-Fi",
+    series: [
+      "My Hero Academia", "Dr. Stone", "Seraph of the End",
+      "Darling in the FranXX", "Ghost in the Shell",
+      "The Melancholy of Haruhi Suzumiya", "Trigun",
+      "Outlaw Star", "Space Dandy", "Promare",
+    ]
+  },
+
+  // ── Where the light doesn't reach ─────────────────────────────────────────
+  { icon: "☠️",  name: "Dark / Horror",
+    series: [
+      "Tokyo Ghoul", "Black Butler", "Made in Abyss", "Goblin Slayer",
+      "Dororo", "Hellsing", "Claymore", "Elfen Lied", "Higurashi",
+      "Shiki", "Corpse Party", "Another", "Blood+", "Deadman Wonderland",
+    ]
+  },
+
+  // ── Quests, dungeons, and wide worlds ─────────────────────────────────────
+  { icon: "🗺️",  name: "Adventure / Fantasy",
+    series: [
+      "Demon Slayer", "Jujutsu Kaisen", "Food Wars", "Golden Kamuy",
+      "Magi", "Fairy Tail", "Black Clover", "The Seven Deadly Sins",
+      "Nanatsu no Taizai", "Radiant", "Dungeon Meshi", "Delicious in Dungeon",
+    ]
+  },
+
+  // ── Sweat, tears, and comebacks ────────────────────────────────────────────
+  { icon: "🏆",  name: "Sports",
+    series: [
+      "Haikyuu", "Blue Lock", "Slam Dunk", "Hajime no Ippo",
+      "Captain Tsubasa", "Initial D", "Ping Pong the Animation",
+      "Kuroko's Basketball", "Yuri on Ice", "Free!",
+      "Umamusume: Pretty Derby", "Umamusume: Cinderella Grey",
+      "Ao Ashi", "Eyeshield 21",
+    ]
+  },
+
+  // ── Laughs, idols, and everyday weirdness ─────────────────────────────────
+  { icon: "🎭",  name: "Drama / Comedy / Other",
+    series: [
+      "Tokyo Revengers", "Oshi no Ko", "Sailor Moon", "Cardcaptor Sakura",
+      "Paradise Kiss", "Nichijou", "Azumanga Daioh", "K-On!",
+      "Lucky Star", "Yuru Camp", "Laid-Back Camp", "Odd Taxi",
+    ]
+  },
+
+  // ── Missions, secrets, and covert ops ─────────────────────────────────────
+  { icon: "🕵️",  name: "Spy / Thriller",
+    series: [
+      "Spy x Family", "Assassination Classroom", "Psycho-Pass",
+      "91 Days", "Banana Fish",
+    ]
+  },
 ];
 
 // ── GAME OPTIONS (persisted via localStorage-like object in memory) ────────
