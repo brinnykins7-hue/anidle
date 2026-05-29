@@ -741,28 +741,173 @@ header {
   transform: translateY(-1px);
 }
 
-/* Challenge card (reuses .options-card but slightly wider) */
+/* Challenge card — wider to fit the genre accordion */
 .challenge-card {
-  max-width: 520px !important;
-  width: 92vw;
+  max-width: 620px !important;
+  width: 94vw;
 }
 
-/* Series / character select dropdowns */
+/* ── CHALLENGE GENRE ACCORDION (mirrors main setup accordion) ─────────────── */
+.ch-genre-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.ch-genre-block {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color .15s;
+}
+
+.ch-genre-header {
+  width: 100%;
+  background: var(--bg-card2);
+  border: none;
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: .88rem;
+  font-weight: bold;
+  padding: 10px 14px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  transition: background .15s;
+  user-select: none;
+}
+.ch-genre-header:hover { background: rgba(59,130,246,.08); }
+.ch-genre-header.open  { background: rgba(59,130,246,.12); color: var(--accent); }
+[data-theme="dark"] .ch-genre-header.open { color: var(--accent-light); }
+
+.ch-genre-label { display: flex; align-items: center; gap: 7px; }
+.ch-genre-icon  { font-size: 1rem; }
+.ch-genre-badge {
+  font-size: .7rem;
+  background: rgba(59,130,246,.15);
+  color: var(--accent);
+  border-radius: 99px;
+  padding: 1px 8px;
+  font-weight: normal;
+}
+[data-theme="dark"] .ch-genre-badge { color: var(--accent-light); }
+
+.ch-genre-arrow {
+  font-size: .78rem;
+  color: var(--text-muted);
+  transition: transform .2s;
+}
+.ch-genre-header.open .ch-genre-arrow { transform: rotate(180deg); }
+
+.ch-genre-body {
+  display: none;
+  padding: 10px 12px;
+  background: var(--bg);
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.ch-genre-body.open { display: flex; }
+
+.ch-series-tag {
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: .8rem;
+  cursor: pointer;
+  transition: all .15s;
+  user-select: none;
+}
+.ch-series-tag:hover { border-color: var(--accent); color: var(--accent); }
+.ch-series-tag.selected {
+  background: rgba(59,130,246,.15);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 6px rgba(59,130,246,.15);
+}
+[data-theme="dark"] .ch-series-tag.selected { color: var(--accent-light); }
+
+/* Selected series summary chips */
+.ch-selected-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+  min-height: 0;
+}
+.ch-selected-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(59,130,246,.15);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 4px 10px 4px 12px;
+  font-size: .78rem;
+  color: var(--accent);
+}
+[data-theme="dark"] .ch-selected-chip { color: var(--accent-light); border-color: var(--accent-light); }
+.ch-chip-remove {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: .9rem;
+  padding: 0;
+  line-height: 1;
+  opacity: .7;
+  transition: opacity .15s;
+}
+.ch-chip-remove:hover { opacity: 1; }
+
+#ch-series-count {
+  font-size: .82rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* ── CHARACTER PICKER (step 3) ───────────────────────────────────────────── */
+.ch-char-section {
+  display: none;
+}
+.ch-char-section.visible {
+  display: block;
+}
+
+/* Themed select — matches the rest of the UI */
 .ch-select {
   width: 100%;
   padding: 9px 12px;
   border-radius: 8px;
   border: 1.5px solid var(--border);
-  background: var(--card);
+  background: var(--bg-input);
   color: var(--text);
-  font-size: .95rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: .9rem;
   cursor: pointer;
   margin-top: 6px;
-  transition: border-color .2s;
+  transition: border-color .2s, background .2s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a9fc4' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 34px;
 }
 .ch-select:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(59,130,246,.2);
+}
+.ch-select option {
+  background: var(--bg-card);
+  color: var(--text);
 }
 
 /* Link row */
@@ -777,12 +922,13 @@ header {
   padding: 8px 10px;
   border-radius: 8px;
   border: 1.5px solid var(--border);
-  background: var(--bg);
+  background: var(--bg-input);
   color: var(--text);
   font-size: .82rem;
   font-family: monospace;
   min-width: 0;
   cursor: text;
+  transition: border-color .2s;
 }
 .ch-link-input:focus {
   outline: none;
