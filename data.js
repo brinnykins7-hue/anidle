@@ -433,8 +433,6 @@ const ANIME_DB = [
   { name: "Eris Boreas Greyrat",   series: "Mushoku Tensei",          age: 14,   height: 163, gender: "F", hair: "red",           eyes: "blue"    },
   { name: "Paul Greyrat",          series: "Mushoku Tensei",          age: 38,   height: 180, gender: "M", hair: "brown",         eyes: "brown"   },
 
-  // ── SWORD ART ONLINE (skip dups) ─────────────────────────────────────────
-
   // ── THE PROMISED NEVERLAND (PSYCHOLOGICAL THRILLER) ──────────────────────
   { name: "Emma",                  series: "The Promised Neverland",  age: 11,   height: 145, gender: "F", hair: "orange",        eyes: "green"   },
   { name: "Norman",                series: "The Promised Neverland",  age: 11,   height: 145, gender: "M", hair: "white",         eyes: "blue"    },
@@ -481,8 +479,6 @@ const ANIME_DB = [
   { name: "Yui Yuigahama",         series: "OreGairu",                age: 16,   height: 160, gender: "F", hair: "pink",          eyes: "brown"   },
   { name: "Saika Totsuka",         series: "OreGairu",                age: 16,   height: 160, gender: "M", hair: "silver",        eyes: "blue"    },
 
-  // ── SWORD ART ONLINE (skip dups) ─────────────────────────────────────────
-
   // ── SERAPH OF THE END ─────────────────────────────────────────────────────
   { name: "Yuichiro Hyakuya",      series: "Seraph of the End",       age: 16,   height: 170, gender: "M", hair: "black",         eyes: "green"   },
   { name: "Mikaela Hyakuya",       series: "Seraph of the End",       age: 16,   height: 172, gender: "M", hair: "blonde",        eyes: "blue"    },
@@ -496,16 +492,12 @@ const ANIME_DB = [
   { name: "Leone",                 series: "Akame ga Kill",           age: 20,   height: 165, gender: "F", hair: "blonde",        eyes: "amber"   },
   { name: "Esdeath",               series: "Akame ga Kill",           age: 25,   height: 170, gender: "F", hair: "blue",          eyes: "blue"    },
 
-  // ── REZERO ─── (already covered above) ───────────────────────────────────
-
   // ── KAGUYA SAMA LOVE IS WAR (ROMANCE/COMEDY) ──────────────────────────────
   { name: "Miyuki Shirogane",      series: "Kaguya-sama",             age: 17,   height: 178, gender: "M", hair: "black",         eyes: "brown"   },
   { name: "Kaguya Shinomiya",      series: "Kaguya-sama",             age: 17,   height: 158, gender: "F", hair: "black",         eyes: "red"     },
   { name: "Chika Fujiwara",        series: "Kaguya-sama",             age: 17,   height: 154, gender: "F", hair: "pink",          eyes: "blue"    },
   { name: "Yu Ishigami",           series: "Kaguya-sama",             age: 16,   height: 168, gender: "M", hair: "black",         eyes: "black"   },
   { name: "Ai Hayasaka",           series: "Kaguya-sama",             age: 17,   height: 165, gender: "F", hair: "blonde",        eyes: "blue"    },
-
-  // ── FULLMETAL ALCHEMIST (dups removed) ───────────────────────────────────
 
   // ── DURARARA ──────────────────────────────────────────────────────────────
   { name: "Shizuo Heiwajima",      series: "Durarara",                age: 23,   height: 185, gender: "M", hair: "blonde",        eyes: "brown"   },
@@ -533,8 +525,6 @@ const ANIME_DB = [
   { name: "Kyou Fujibayashi",      series: "Clannad",                 age: 17,   height: 162, gender: "F", hair: "purple",        eyes: "violet"  },
   { name: "Kotomi Ichinose",       series: "Clannad",                 age: 17,   height: 160, gender: "F", hair: "brown",         eyes: "blue"    },
   { name: "Tomoyo Sakagami",       series: "Clannad",                 age: 17,   height: 165, gender: "F", hair: "silver",        eyes: "grey"    },
-
-  // ── SWORD ART ONLINE PROGRESSIVE (already covered) ───────────────────────
 
   // ── SHAMAN KING (SHONEN) ──────────────────────────────────────────────────
   { name: "Yoh Asakura",           series: "Shaman King",             age: 13,   height: 162, gender: "M", hair: "brown",         eyes: "brown"   },
@@ -616,10 +606,6 @@ const ANIME_DB = [
   { name: "Mamoru Takamura",       series: "Hajime no Ippo",          age: 19,   height: 178, gender: "M", hair: "black",         eyes: "black"   },
   { name: "Masaru Aoki",           series: "Hajime no Ippo",          age: 18,   height: 175, gender: "M", hair: "brown",         eyes: "brown"   },
 
-  // ── NEON GENESIS (already Evangelion) ────────────────────────────────────
-
-  // ── BLEACH (already) ─────────────────────────────────────────────────────
-
   // ── CAPTAIN TSUBASA (SPORTS) ──────────────────────────────────────────────
   { name: "Tsubasa Ozora",         series: "Captain Tsubasa",         age: 11,   height: 160, gender: "M", hair: "brown",         eyes: "brown"   },
   { name: "Kojiro Hyuga",          series: "Captain Tsubasa",         age: 11,   height: 163, gender: "M", hair: "black",         eyes: "black"   },
@@ -631,8 +617,6 @@ const ANIME_DB = [
   { name: "Ryosuke Takahashi",     series: "Initial D",               age: 20,   height: 175, gender: "M", hair: "brown",         eyes: "brown"   },
   { name: "Keisuke Takahashi",     series: "Initial D",               age: 19,   height: 173, gender: "M", hair: "brown",         eyes: "brown"   },
   { name: "Itsuki Takeuchi",       series: "Initial D",               age: 18,   height: 168, gender: "M", hair: "brown",         eyes: "brown"   },
-
-  // ── HUNTER X HUNTER (already) ────────────────────────────────────────────
 
   // ── KAKEGURUI (PSYCHOLOGICAL / GAMBLING) ──────────────────────────────────
   { name: "Yumeko Jabami",         series: "Kakegurui",               age: 17,   height: 164, gender: "F", hair: "black",         eyes: "red"     },
@@ -659,8 +643,6 @@ const ANIME_DB = [
   { name: "Eiji Okumura",          series: "Banana Fish",             age: 19,   height: 174, gender: "M", hair: "black",         eyes: "brown"   },
   { name: "Shorter Wong",          series: "Banana Fish",             age: 18,   height: 176, gender: "M", hair: "purple",        eyes: "brown"   },
   { name: "Yut-Lung Lee",          series: "Banana Fish",             age: 17,   height: 170, gender: "M", hair: "black",         eyes: "blue"    },
-
-  // ── SWORD OF THE STRANGER / skip film ────────────────────────────────────
 
   // ── OURAN HIGH SCHOOL HOST CLUB (ROMANCE / COMEDY) ───────────────────────
   { name: "Tamaki Suoh",           series: "Ouran Host Club",         age: 16,   height: 183, gender: "M", hair: "blonde",        eyes: "violet"  },
@@ -799,15 +781,11 @@ const ANIME_DB = [
   { name: "Tahoumaru",             series: "Dororo",                  age: 15,   height: 165, gender: "M", hair: "black",         eyes: "brown"   },
   { name: "Daigo Kagemitsu",       series: "Dororo",                  age: 45,   height: 183, gender: "M", hair: "black",         eyes: "grey"    },
 
-  // ── NANA TO KAORU (skip — too niche) ─────────────────────────────────────
-
   // ── NICHIJOU (COMEDY / SLICE OF LIFE) ─────────────────────────────────────
   { name: "Yuko Aioi",             series: "Nichijou",                age: 16,   height: 157, gender: "F", hair: "brown",         eyes: "brown"   },
   { name: "Mio Naganohara",        series: "Nichijou",                age: 16,   height: 162, gender: "F", hair: "blue",          eyes: "brown"   },
   { name: "Mai Minakami",          series: "Nichijou",                age: 16,   height: 165, gender: "F", hair: "black",         eyes: "grey"    },
   { name: "Nano Shinonome",        series: "Nichijou",                age: 16,   height: 157, gender: "F", hair: "brown",         eyes: "red"     },
-
-  // ── GEGEGE NO KITARO / skip ───────────────────────────────────────────────
 
   // ── GURREN LAGANN (MECHA / ACTION) ────────────────────────────────────────
   { name: "Simon",                 series: "Gurren Lagann",           age: 14,   height: 158, gender: "M", hair: "black",         eyes: "blue"    },
@@ -815,8 +793,6 @@ const ANIME_DB = [
   { name: "Yoko Littner",          series: "Gurren Lagann",           age: 14,   height: 167, gender: "F", hair: "red",           eyes: "yellow"  },
   { name: "Nia Teppelin",          series: "Gurren Lagann",           age: 14,   height: 156, gender: "F", hair: "blue",          eyes: "blue"    },
   { name: "Viral",                 series: "Gurren Lagann",           age: 20,   height: 188, gender: "M", hair: "white",         eyes: "yellow"  },
-
-  // ── FULLMETAL ALCHEMIST (1st) / already covered ───────────────────────────
 
   // ── NATSUME'S BOOK OF FRIENDS (SUPERNATURAL / SLICE OF LIFE) ─────────────
   { name: "Takashi Natsume",       series: "Natsume's Book of Friends", age: 15, height: 170, gender: "M", hair: "blonde",        eyes: "gold"    },
@@ -827,6 +803,77 @@ const ANIME_DB = [
   // ── 86 EIGHTY-SIX ──────────────────────────────────────────────────────
   { name: "Shinei Nouzen",    series: "86", age: 17, height: 172, gender: "M", hair: "black",  eyes: "red"    },
   { name: "Vladilena Milize", series: "86", age: 16, height: 163, gender: "F", hair: "silver", eyes: "violet" },
+
+   // ── KUROKO'S BASKETBALL ───────────────────────────────────────────────────
+  { name: "Tetsuya Kuroko",          series: "Kuroko's Basketball",     age: 16,   height: 168, gender: "M", hair: "blue",          eyes: "blue"    },
+  { name: "Taiga Kagami",            series: "Kuroko's Basketball",     age: 16,   height: 190, gender: "M", hair: "red,black",     eyes: "red"     },
+  { name: "Ryota Kise",              series: "Kuroko's Basketball",     age: 16,   height: 189, gender: "M", hair: "blonde",        eyes: "golden"  },
+  { name: "Shintaro Midorima",       series: "Kuroko's Basketball",     age: 16,   height: 195, gender: "M", hair: "green",         eyes: "green"   },
+  { name: "Daiki Aomine",            series: "Kuroko's Basketball",     age: 16,   height: 192, gender: "M", hair: "dark blue",     eyes: "dark blue"},
+  { name: "Atsushi Murasakibara",    series: "Kuroko's Basketball",     age: 16,   height: 208, gender: "M", hair: "purple",        eyes: "purple"  },
+  { name: "Seijuro Akashi",          series: "Kuroko's Basketball",     age: 16,   height: 173, gender: "M", hair: "red",           eyes: "red"     },
+  { name: "Junpei Hyuga",            series: "Kuroko's Basketball",     age: 17,   height: 178, gender: "M", hair: "black",         eyes: "brown"   },
+ 
+  // ── YURI ON ICE (FIGURE SKATING) ─────────────────────────────────────────
+  { name: "Yuri Katsuki",            series: "Yuri on Ice",             age: 23,   height: 173, gender: "M", hair: "black",         eyes: "brown"   },
+  { name: "Victor Nikiforov",        series: "Yuri on Ice",             age: 27,   height: 180, gender: "M", hair: "silver",        eyes: "blue"    },
+  { name: "Yuri Plisetsky",          series: "Yuri on Ice",             age: 15,   height: 163, gender: "M", hair: "blonde",        eyes: "green"   },
+  { name: "Phichit Chulanont",       series: "Yuri on Ice",             age: 20,   height: 168, gender: "M", hair: "black",         eyes: "brown"   },
+  { name: "Christophe Giacometti",   series: "Yuri on Ice",             age: 26,   height: 180, gender: "M", hair: "brown",         eyes: "green"   },
+ 
+  // ── FREE! (SWIMMING) ─────────────────────────────────────────────────────
+  { name: "Haruka Nanase",           series: "Free!",                   age: 17,   height: 175, gender: "M", hair: "black",         eyes: "blue"    },
+  { name: "Makoto Tachibana",        series: "Free!",                   age: 17,   height: 183, gender: "M", hair: "brown",         eyes: "green"   },
+  { name: "Nagisa Hazuki",           series: "Free!",                   age: 16,   height: 165, gender: "M", hair: "blonde",        eyes: "pink"    },
+  { name: "Rei Ryugazaki",           series: "Free!",                   age: 16,   height: 177, gender: "M", hair: "dark blue",     eyes: "violet"  },
+  { name: "Rin Matsuoka",            series: "Free!",                   age: 17,   height: 177, gender: "M", hair: "red",           eyes: "red"     },
+  { name: "Sousuke Yamazaki",        series: "Free!",                   age: 18,   height: 185, gender: "M", hair: "teal",          eyes: "teal"    },
+  { name: "Aiichiro Nitori",         series: "Free!",                   age: 15,   height: 170, gender: "M", hair: "silver",        eyes: "grey"    },
+ 
+  // ── UMAMUSUME: PRETTY DERBY (HORSE RACING) ───────────────────────────────
+  { name: "Special Week",            series: "Umamusume: Pretty Derby", age: 17,   height: 158, gender: "F", hair: "black,white",   eyes: "blue"    },
+  { name: "Silence Suzuka",          series: "Umamusume: Pretty Derby", age: 17,   height: 165, gender: "F", hair: "white",         eyes: "red"     },
+  { name: "Tokai Teio",              series: "Umamusume: Pretty Derby", age: 17,   height: 154, gender: "F", hair: "white",         eyes: "purple"  },
+  { name: "Mejiro McQueen",          series: "Umamusume: Pretty Derby", age: 17,   height: 162, gender: "F", hair: "white",         eyes: "purple"  },
+  { name: "Gold Ship",               series: "Umamusume: Pretty Derby", age: 17,   height: 163, gender: "F", hair: "silver",        eyes: "purple"  },
+  { name: "Vodka",                   series: "Umamusume: Pretty Derby", age: 17,   height: 158, gender: "F", hair: "black",         eyes: "blue"    },
+  { name: "Daiwa Scarlet",           series: "Umamusume: Pretty Derby", age: 17,   height: 160, gender: "F", hair: "red",           eyes: "red"     },
+  { name: "El Condor Pasa",          series: "Umamusume: Pretty Derby", age: 17,   height: 161, gender: "F", hair: "brown",         eyes: "brown"   },
+  { name: "Grass Wonder",            series: "Umamusume: Pretty Derby", age: 17,   height: 159, gender: "F", hair: "blonde",        eyes: "green"   },
+  { name: "Oguri Cap",               series: "Umamusume: Pretty Derby", age: 17,   height: 157, gender: "F", hair: "white",         eyes: "blue"    },
+  { name: "Symboli Rudolf",          series: "Umamusume: Pretty Derby", age: 17,   height: 166, gender: "F", hair: "black",         eyes: "red"     },
+  { name: "Narita Brian",            series: "Umamusume: Pretty Derby", age: 17,   height: 163, gender: "F", hair: "black,white",   eyes: "orange"  },
+ 
+  // ── UMAMUSUME: CINDERELLA GREY (HORSE RACING) ────────────────────────────
+  { name: "Oguri Cap (Cinderella Grey)", series: "Umamusume: Cinderella Grey", age: 17, height: 157, gender: "F", hair: "white",    eyes: "blue"    },
+  { name: "Super Creek",             series: "Umamusume: Cinderella Grey", age: 17, height: 164,  gender: "F", hair: "teal",        eyes: "teal"    },
+  { name: "Tamamo Cross",            series: "Umamusume: Cinderella Grey", age: 17, height: 156,  gender: "F", hair: "red",         eyes: "red"     },
+  { name: "Inari One",               series: "Umamusume: Cinderella Grey", age: 17, height: 158,  gender: "F", hair: "brown",       eyes: "brown"   },
+  { name: "Yamanin Zephyr",          series: "Umamusume: Cinderella Grey", age: 17, height: 160,  gender: "F", hair: "blue",        eyes: "blue"    },
+  { name: "Hokuto Vega",             series: "Umamusume: Cinderella Grey", age: 17, height: 162,  gender: "F", hair: "purple",      eyes: "purple"  },
+ 
+  // ── PING PONG THE ANIMATION ───────────────────────────────────────────────
+  { name: "Makoto Tsukimoto (Smile)", series: "Ping Pong the Animation", age: 17,  height: 170, gender: "M", hair: "black",         eyes: "grey"    },
+  { name: "Yutaka Hoshino (Peco)",   series: "Ping Pong the Animation", age: 17,   height: 173, gender: "M", hair: "blonde",        eyes: "brown"   },
+  { name: "Ryuichi Kazama (Dragon)", series: "Ping Pong the Animation", age: 17,   height: 176, gender: "M", hair: "black",         eyes: "black"   },
+  { name: "Wenge Kong (China)",      series: "Ping Pong the Animation", age: 17,   height: 180, gender: "M", hair: "black",         eyes: "black"   },
+  { name: "Manabu Sakuma (Demon)",   series: "Ping Pong the Animation", age: 17,   height: 168, gender: "M", hair: "brown",         eyes: "brown"   },
+ 
+  // ── AO ASHI (FOOTBALL) ────────────────────────────────────────────────────
+  { name: "Ashito Aoi",              series: "Ao Ashi",                 age: 15,   height: 173, gender: "M", hair: "brown",         eyes: "brown"   },
+  { name: "Kanpei Hana",             series: "Ao Ashi",                 age: 16,   height: 170, gender: "M", hair: "black",         eyes: "brown"   },
+  { name: "Norbert Lotte",           series: "Ao Ashi",                 age: 16,   height: 178, gender: "M", hair: "blonde",        eyes: "blue"    },
+  { name: "Eita Otomo",              series: "Ao Ashi",                 age: 15,   height: 172, gender: "M", hair: "black",         eyes: "black"   },
+  { name: "Akutsu Taiyo",            series: "Ao Ashi",                 age: 15,   height: 180, gender: "M", hair: "black",         eyes: "grey"    },
+ 
+  // ── EYESHIELD 21 (AMERICAN FOOTBALL) ─────────────────────────────────────
+  { name: "Sena Kobayakawa",         series: "Eyeshield 21",            age: 15,   height: 165, gender: "M", hair: "brown",         eyes: "brown"   },
+  { name: "Yoichi Hiruma",           series: "Eyeshield 21",            age: 16,   height: 175, gender: "M", hair: "blonde",        eyes: "black"   },
+  { name: "Ryokan Kurita",           series: "Eyeshield 21",            age: 16,   height: 175, gender: "M", hair: "black",         eyes: "black"   },
+  { name: "Taro Raimon (Monta)",     series: "Eyeshield 21",            age: 15,   height: 170, gender: "M", hair: "black",         eyes: "brown"   },
+  { name: "Kazuki Jumonji",          series: "Eyeshield 21",            age: 16,   height: 174, gender: "M", hair: "black",         eyes: "brown"   },
+  { name: "Seijuro Shin",            series: "Eyeshield 21",            age: 16,   height: 180, gender: "M", hair: "black",         eyes: "black"   },
+  { name: "Riku Kaitani",            series: "Eyeshield 21",            age: 15,   height: 163, gender: "M", hair: "brown",         eyes: "brown"   },
     
 ];
 
