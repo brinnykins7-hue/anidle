@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,8 +11,18 @@
 
   <!-- HEADER -->
   <header>
-    <h1 class="logo">ANIDLE</h1>
-    <p class="tagline">Guess the Anime Character</p>
+    <div class="header-inner">
+      <div class="header-left"></div>
+      <div class="header-center">
+        <h1 class="logo">ANIDLE</h1>
+        <p class="tagline">Guess the Anime Character</p>
+      </div>
+      <div class="header-right">
+        <button id="theme-toggle" class="theme-btn" title="Toggle light/dark mode">
+          <span class="theme-icon">🌙</span>
+        </button>
+      </div>
+    </div>
   </header>
 
   <!-- SETUP SCREEN -->
@@ -31,7 +41,11 @@
         <div id="genre-list" class="genre-list"></div>
 
         <p id="pool-count" class="pool-count">0 series selected (0 characters)</p>
-        <button id="start-btn" class="start-btn" disabled>▶ Start Game</button>
+
+        <div class="start-row">
+          <button id="start-btn" class="start-btn" disabled>▶ Start Game</button>
+          <button id="options-btn" class="options-btn" title="Game Options">⚙ Options</button>
+        </div>
       </div>
 
       <div class="how-to-play">
@@ -112,6 +126,87 @@
       <div id="result-char" class="result-char"></div>
       <button id="play-again-btn" class="start-btn">▶ Play Again</button>
       <button id="change-series-btn" class="ctrl-btn">Change Series</button>
+    </div>
+  </div>
+
+  <!-- OPTIONS MODAL -->
+  <div id="options-overlay" class="options-overlay hidden">
+    <div class="options-card">
+      <div class="options-header">
+        <h2 class="options-title">⚙ Game Options</h2>
+        <button id="options-close" class="options-close">✕</button>
+      </div>
+
+      <div class="options-body">
+
+        <div class="option-group">
+          <div class="option-group-label">Search Bar</div>
+
+          <div class="option-row">
+            <div class="option-info">
+              <span class="option-name">Show anime series in suggestions</span>
+              <span class="option-desc">Autocomplete shows "Character (Series)" to help identify characters</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="opt-show-series" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="option-row">
+            <div class="option-info">
+              <span class="option-name">Search by anime series name</span>
+              <span class="option-desc">Type an anime name to filter characters from that series</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="opt-search-by-series" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="option-row">
+            <div class="option-info">
+              <span class="option-name">Search by both name and series</span>
+              <span class="option-desc">Matches characters whose name OR series contains your query</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="opt-search-both" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="option-group">
+          <div class="option-group-label">Gameplay</div>
+
+          <div class="option-row">
+            <div class="option-info">
+              <span class="option-name">Hide series column</span>
+              <span class="option-desc">Removes the Series column from the guess table for a harder challenge</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="opt-hide-series-col" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="option-row">
+            <div class="option-info">
+              <span class="option-name">Hard mode</span>
+              <span class="option-desc">Reduces max attempts from 20 to 10</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="opt-hard-mode" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="options-footer">
+        <button id="options-save" class="start-btn">Save Options</button>
+      </div>
     </div>
   </div>
 
