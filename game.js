@@ -13,6 +13,7 @@ const GENRES = [
   { icon: "⚙️",  name: "Dark / Horror",             series: ["Tokyo Ghoul","Black Butler","Made in Abyss","Goblin Slayer","Dororo","Hellsing","Claymore","Elfen Lied","Higurashi","Shiki","Corpse Party","Another","Blood+","Deadman Wonderland"] },
   { icon: "🥷",  name: "Adventure / Fantasy",       series: ["Demon Slayer","Jujutsu Kaisen","Food Wars","Golden Kamuy","Magi","Fairy Tail","Black Clover","The Seven Deadly Sins","Nanatsu no Taizai","Radiant","Dungeon Meshi","Delicious in Dungeon"] },
   { icon: "🎭",  name: "Drama / Other",             series: ["Tokyo Revengers","Oshi no Ko","Sailor Moon","Cardcaptor Sakura","Slam Dunk","Hajime no Ippo","Captain Tsubasa","Initial D","Paradise Kiss","Nichijou","Azumanga Daioh","K-On!","Lucky Star","Yuru Camp","Laid-Back Camp","Odd Taxi","Ping Pong the Animation"] },
+  { icon: "🕵️",  name: "Spy / Action 2",           series: ["Spy x Family","Assassination Classroom"] },
 ];
 
 let target      = null;
@@ -334,6 +335,13 @@ playAgainBtn.addEventListener('click', function() {
 changeSeriesBtn.addEventListener('click', function() {
   resultOverlay.classList.add('hidden');
   showScreen('setup');
+});
+
+// Click outside the card to dismiss overlay and return to game board
+resultOverlay.addEventListener('click', function(e) {
+  if (!e.target.closest('.result-card')) {
+    resultOverlay.classList.add('hidden');
+  }
 });
 
 // ─── INIT ─────────────────────────────────────────────────────────────────
