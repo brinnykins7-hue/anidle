@@ -911,7 +911,7 @@ chGenerateBtn.addEventListener('click', function() {
     pool: Array.from(challengeSelectedSeries),
   });
   var encoded = btoa(unescape(encodeURIComponent(payload)));
-  var url = 'https://brinnykins7-hue.github.io/anidle/#challenge=' + encoded;
+  var url = window.location.href.split('#')[0] + '#challenge=' + encoded;
 
   chLinkInput.value = url;
   chLinkGroup.style.display = '';
