@@ -67,7 +67,7 @@ var themeIcon      = themeToggleBtn.querySelector('.theme-icon');
 // ── THEME ──────────────────────────────────────────────────────────────────
 var currentTheme = 'dark';
 try {
-  var saved = sessionStorage.getItem('anidle_theme');
+  var saved = localStorage.getItem('anidle_theme');
   if (saved === 'light' || saved === 'dark') currentTheme = saved;
 } catch(e) {}
 
@@ -75,7 +75,7 @@ function applyTheme(theme) {
   currentTheme = theme;
   document.documentElement.setAttribute('data-theme', theme);
   themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
-  try { sessionStorage.setItem('anidle_theme', theme); } catch(e) {}
+  try { localStorage.setItem('anidle_theme', theme); } catch(e) {}
 }
 applyTheme(currentTheme);
 themeToggleBtn.addEventListener('click', function() {
