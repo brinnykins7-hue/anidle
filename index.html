@@ -1,58 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ANIDLE – Choose Your Game</title>
+  <!-- Apply saved theme immediately before CSS renders to prevent flash -->
+  <script>
+    try {
+      var t = localStorage.getItem('anidle_theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch(e) {}
+  </script>
+  <link rel="stylesheet" href="style.css" />
   <style>
-    :root {
-      --bg: #07101f;
-      --bg-card: #0c1a30;
-      --bg-card2: #101f38;
-      --border: #1c3454;
-      --border-hi: #2d6aad;
-      --accent: #3b82f6;
-      --accent-light: #7cb9f8;
-      --text: #dde9f8;
-      --text-muted: #7a9fc4;
-      --green: #22c55e;
-      --purple: #a855f7;
-      --shadow-card: 0 4px 24px rgba(0,0,0,.4);
-      --shadow-modal: 0 20px 60px rgba(0,0,0,.6);
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Home page layout — built on top of style.css tokens */
     body {
-      background: var(--bg);
-      background-image:
-        radial-gradient(ellipse at 15% 10%, rgba(59,130,246,.07) 0%, transparent 55%),
-        radial-gradient(ellipse at 85% 85%, rgba(168,85,247,.07) 0%, transparent 55%);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      min-height: 100vh;
       padding: 24px 16px;
     }
-    .logo {
+
+    [data-theme="dark"] body {
+      background-image:
+        radial-gradient(ellipse at 15% 10%, rgba(59,130,246,.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(168,85,247,.07) 0%, transparent 55%);
+    }
+
+    /* Home logo — bigger than the game header version */
+    .home-logo {
       font-family: Arial Black, Arial, sans-serif;
       font-size: clamp(2.8rem, 8vw, 5rem);
       font-weight: 900;
       letter-spacing: .2em;
-      color: var(--accent-light);
-      filter: drop-shadow(0 0 20px rgba(59,130,246,.45));
+      color: var(--accent);
       margin-bottom: 6px;
       text-align: center;
+      transition: color .25s, filter .25s;
     }
-    .tagline {
+    [data-theme="dark"] .home-logo {
+      color: var(--accent-light);
+      filter: drop-shadow(0 0 20px rgba(59,130,246,.45));
+    }
+
+    .home-tagline {
       color: var(--text-muted);
       font-size: .85rem;
       letter-spacing: .25em;
       text-transform: uppercase;
       margin-bottom: 48px;
       text-align: center;
+      transition: color .25s;
     }
+
     .mode-grid {
       display: flex;
       gap: 20px;
@@ -61,6 +63,7 @@
       max-width: 740px;
       width: 100%;
     }
+
     .mode-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -72,7 +75,7 @@
       cursor: pointer;
       text-decoration: none;
       color: var(--text);
-      transition: transform .2s, border-color .2s, box-shadow .2s;
+      transition: transform .2s, border-color .2s, box-shadow .2s, background .25s;
       box-shadow: var(--shadow-card);
       display: flex;
       flex-direction: column;
@@ -86,21 +89,29 @@
     .mode-card.character { border-color: rgba(59,130,246,.4); }
     .mode-card.character:hover { border-color: var(--accent); box-shadow: 0 12px 40px rgba(59,130,246,.2); }
     .mode-card.series    { border-color: rgba(168,85,247,.4); }
-    .mode-card.series:hover    { border-color: var(--purple); box-shadow: 0 12px 40px rgba(168,85,247,.2); }
+    .mode-card.series:hover    { border-color: #a855f7; box-shadow: 0 12px 40px rgba(168,85,247,.2); }
+
     .mode-icon { font-size: 3.2rem; }
+
     .mode-title {
       font-family: Arial Black, Arial, sans-serif;
       font-size: 1.35rem;
       font-weight: 900;
       letter-spacing: .08em;
+      transition: color .25s;
     }
-    .mode-card.character .mode-title { color: var(--accent-light); }
-    .mode-card.series    .mode-title { color: #c084fc; }
+    .mode-card.character .mode-title { color: var(--accent); }
+    [data-theme="dark"] .mode-card.character .mode-title { color: var(--accent-light); }
+    .mode-card.series    .mode-title { color: #9333ea; }
+    [data-theme="dark"] .mode-card.series .mode-title { color: #c084fc; }
+
     .mode-desc {
       font-size: .85rem;
       color: var(--text-muted);
       line-height: 1.55;
+      transition: color .25s;
     }
+
     .mode-pill {
       font-size: .72rem;
       padding: 5px 16px;
@@ -108,21 +119,60 @@
       font-weight: bold;
       letter-spacing: .1em;
       text-transform: uppercase;
+      transition: all .25s;
     }
-    .mode-card.character .mode-pill { background: rgba(59,130,246,.18); color: var(--accent-light); border: 1px solid rgba(59,130,246,.35); }
-    .mode-card.series    .mode-pill { background: rgba(168,85,247,.18); color: #c084fc;              border: 1px solid rgba(168,85,247,.35); }
-    .footer-note {
+    .mode-card.character .mode-pill {
+      background: rgba(59,130,246,.18);
+      color: var(--accent);
+      border: 1px solid rgba(59,130,246,.35);
+    }
+    [data-theme="dark"] .mode-card.character .mode-pill { color: var(--accent-light); }
+    .mode-card.series .mode-pill {
+      background: rgba(168,85,247,.18);
+      color: #9333ea;
+      border: 1px solid rgba(168,85,247,.35);
+    }
+    [data-theme="dark"] .mode-card.series .mode-pill { color: #c084fc; }
+
+    .home-footer {
       margin-top: 40px;
       color: var(--text-muted);
       font-size: .78rem;
       opacity: .6;
       text-align: center;
+      transition: color .25s;
+    }
+
+    /* Theme toggle positioned top-right */
+    .home-theme-btn {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 42px; height: 42px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 1.15rem;
+      transition: all .2s;
+      line-height: 1;
+      z-index: 10;
+    }
+    .home-theme-btn:hover {
+      border-color: var(--accent);
+      transform: rotate(20deg) scale(1.08);
+      box-shadow: 0 0 10px rgba(59,130,246,.3);
     }
   </style>
 </head>
 <body>
-  <div class="logo">ANIDLE</div>
-  <p class="tagline">Choose your challenge</p>
+  <button id="home-theme-toggle" class="home-theme-btn" title="Toggle light/dark mode">
+    <span id="home-theme-icon">🌙</span>
+  </button>
+
+  <div class="home-logo">ANIDLE</div>
+  <p class="home-tagline">Choose your challenge</p>
 
   <div class="mode-grid">
     <a class="mode-card character" href="character.html">
@@ -140,6 +190,30 @@
     </a>
   </div>
 
-  <p class="footer-note">Based on ANIDLE by brinnykins7-hue</p>
+  <p class="home-footer">Based on ANIDLE by brinnykins7-hue</p>
+
+  <script>
+    (function() {
+      var btn  = document.getElementById('home-theme-toggle');
+      var icon = document.getElementById('home-theme-icon');
+
+      // Read current theme from what the early script already applied
+      var currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+
+      function applyTheme(theme) {
+        currentTheme = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+        try { localStorage.setItem('anidle_theme', theme); } catch(e) {}
+      }
+
+      // Sync icon to whatever theme is already active on load
+      icon.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+
+      btn.addEventListener('click', function() {
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+      });
+    })();
+  </script>
 </body>
 </html>
