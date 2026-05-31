@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ANIDLE – Guess the Anime Series</title>
   <link rel="stylesheet" href="style.css" />
+  <script>
+    try {
+      var t = localStorage.getItem('anidle_theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch(e) {}
+  </script>
   <style>
     /* Series mode accent: purple */
     .series-mode .logo { color: #c084fc; filter: drop-shadow(0 0 14px rgba(168,85,247,.4)); }
