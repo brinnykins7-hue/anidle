@@ -1054,5 +1054,3 @@ tryLoadChallenge();
 window.addEventListener('hashchange', function() {
   tryLoadChallenge();
 });
-  }
-})();
