@@ -1034,7 +1034,7 @@ function startChallengeGame(data) {
 }
 
 // ── Init: check for challenge link on page load ────────────────────────────
-(function checkForChallenge() {
+function tryLoadChallenge() {
   var data = parseChallengeHash();
   if (data) {
     setTimeout(function() {
@@ -1043,5 +1043,16 @@ function startChallengeGame(data) {
         console.warn('ANIDLE: challenge character not found:', data);
       }
     }, 50);
+  }
+}
+
+// Handle fresh page load with a challenge hash
+tryLoadChallenge();
+
+// Handle the case where the user is ALREADY on character.html and clicks
+// a challenge link — the page won't reload, so we catch the hash change here.
+window.addEventListener('hashchange', function() {
+  tryLoadChallenge();
+});
   }
 })();
