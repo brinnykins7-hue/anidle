@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ANIDLE – Guess the Anime Series</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Series mode accent: purple */
+    .series-mode .logo { color: #c084fc; filter: drop-shadow(0 0 14px rgba(168,85,247,.4)); }
+    .series-mode [data-theme="dark"] .logo { color: #c084fc; }
+    .series-mode .tagline { color: #9d7bc4; }
+    .series-mode .section-title { color: #c084fc; }
+    .series-mode [data-theme="dark"] .section-title { color: #c084fc; }
+    .series-mode .start-btn { background: linear-gradient(135deg, #6b21a8, #a855f7); }
+    .series-mode #guess-btn { background: linear-gradient(135deg, #6b21a8, #a855f7); }
+    .series-mode #guess-input:focus { border-color: #a855f7; box-shadow: 0 0 8px rgba(168,85,247,.25); }
+    .series-mode .genre-header.open,
+    .series-mode [data-theme="dark"] .genre-header.open { color: #c084fc; }
+    .series-mode .series-tag:hover { border-color: #a855f7; color: #c084fc; }
+    .series-mode .series-tag.selected { background: rgba(168,85,247,.15); border-color: #a855f7; color: #c084fc; box-shadow: 0 0 8px rgba(168,85,247,.15); }
+    .series-mode [data-theme="dark"] .series-tag.selected { color: #c084fc; }
+    .series-mode #guess-table th { color: #c084fc; }
+    .series-mode [data-theme="dark"] #guess-table th { color: #c084fc; }
+    .series-mode .side-title { color: #c084fc; }
+    .series-mode [data-theme="dark"] .side-title { color: #c084fc; }
+    .series-mode .attempts-badge span { color: #c084fc; }
+    .series-mode [data-theme="dark"] .attempts-badge span { color: #c084fc; }
+    .series-mode .back-btn:hover { border-color: #a855f7; color: #c084fc; }
+    .series-mode .options-btn:hover { border-color: #a855f7; color: #c084fc; }
+    .series-mode .ctrl-btn:hover { border-color: #a855f7; color: #c084fc; }
+    .series-mode .theme-btn:hover { border-color: #a855f7; box-shadow: 0 0 10px rgba(168,85,247,.3); }
+    .series-mode .autocomplete-list li:hover,
+    .series-mode .autocomplete-list li.active { background: rgba(168,85,247,.1); color: #c084fc; }
+    .series-mode .genre-badge { color: #c084fc; }
+    .series-mode [data-theme="dark"] .genre-badge { color: #c084fc; }
+  </style>
+</head>
+<body class="series-mode">
+<div id="app" class="series-mode">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <div class="header-left">
+        <a href="index.html" class="home-btn" title="Back to mode select">🏠</a>
+      </div>
+      <div class="header-center">
+        <h1 class="logo">ANIDLE</h1>
+        <p class="tagline">Guess the Anime Series</p>
+      </div>
+      <div class="header-right">
+        <button id="theme-toggle" class="theme-btn" title="Toggle light/dark mode">
+          <span class="theme-icon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SETUP SCREEN -->
+  <div id="setup-screen" class="screen active">
+    <div class="setup-container">
+
+      <div class="setup-card">
+        <h2 class="section-title">Select Your Genre Pool</h2>
+        <p class="setup-sub">Pick which genres/eras to include. Click a category to expand, then click series to add them to your pool.</p>
+
+        <div class="series-controls">
+          <button id="select-all-btn" class="ctrl-btn">Select All</button>
+          <button id="clear-all-btn" class="ctrl-btn">Clear All</button>
+        </div>
+
+        <div id="genre-list" class="genre-list"></div>
+
+        <p id="pool-count" class="pool-count">0 series selected</p>
+
+        <div class="start-row">
+          <button id="start-btn" class="start-btn" disabled>▶ Start Game</button>
+          <button id="options-btn" class="options-btn" title="Game Options">⚙ Options</button>
+        </div>
+      </div>
+
+      <div class="how-to-play">
+        <h3 class="section-title">How to Play</h3>
+        <ul>
+          <li>Select genres above, then hit Start Game.</li>
+          <li>Type a series name — autocomplete will help you pick.</li>
+          <li>After each guess, colored cells reveal clues:</li>
+          <li><span class="dot green"></span><strong>Green</strong> — exact match</li>
+          <li><span class="dot yellow"></span><strong>Yellow</strong> — close (year ±3; episodes ±30%; score ±0.5; genre overlap)</li>
+          <li><span class="dot red"></span><strong>Red</strong> — wrong</li>
+          <li>↑ / ↓ arrows show whether to guess higher or lower for numbers.</li>
+          <li>You have <strong>20 attempts</strong> per game.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="screen">
+    <div class="game-layout">
+
+      <!-- Main game column -->
+      <div class="game-main">
+        <div class="game-top">
+          <button id="back-btn" class="back-btn">← Change Pool</button>
+          <div class="attempts-badge">Attempts: <span id="attempts-used">0</span> / 20</div>
+        </div>
+
+        <div class="guess-area">
+          <div class="input-row">
+            <div class="autocomplete-wrap">
+              <input type="text" id="guess-input" placeholder="Type anime series name…" autocomplete="off" />
+              <ul id="autocomplete-list" class="autocomplete-list hidden"></ul>
+            </div>
+            <button id="guess-btn">Guess</button>
+          </div>
+          <p id="guess-msg" class="guess-msg"></p>
+        </div>
+
+        <div class="table-wrap">
+          <table id="guess-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Series</th>
+                <th>Studio</th>
+                <th>Year</th>
+                <th>Episodes</th>
+                <th>Genre</th>
+                <th>Source</th>
+                <th>Score</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="guess-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Side panel -->
+      <div class="game-side">
+        <div class="side-panel">
+          <h3 class="side-title">Pool</h3>
+          <ul id="game-series-list" class="game-series-list"></ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RESULT OVERLAY -->
+  <div id="result-overlay" class="result-overlay hidden">
+    <div class="result-card">
+      <div id="result-emoji" class="result-emoji"></div>
+      <h2 id="result-title"></h2>
+      <p id="result-sub"></p>
+      <div id="result-char" class="result-char"></div>
+      <button id="play-again-btn" class="start-btn">▶ Play Again</button>
+      <button id="change-series-btn" class="ctrl-btn">Change Pool</button>
+    </div>
+  </div>
+
+  <!-- OPTIONS MODAL -->
+  <div id="options-overlay" class="options-overlay hidden">
+    <div class="options-card">
+      <div class="options-header">
+        <h2 class="options-title">⚙ Game Options</h2>
+        <button id="options-close" class="options-close">✕</button>
+      </div>
+      <div class="options-body">
+        <div class="option-group">
+          <div class="option-group-label">Gameplay</div>
+          <div class="option-row">
+            <div class="option-info">
+              <span class="option-name">Hard mode</span>
+              <span class="option-desc">Reduces max attempts from 20 to 10</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="opt-hard-mode" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="option-row">
+            <div class="option-info">
+              <span class="option-name">Hide studio column</span>
+              <span class="option-desc">Removes the Studio column for a harder challenge</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="opt-hide-studio-col" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="options-footer">
+        <button id="options-save" class="start-btn">Save Options</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="series-data.js"></script>
+<script src="series-game.js"></script>
+</body>
+</html>

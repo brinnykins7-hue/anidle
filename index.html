@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ANIDLE – Choose Your Game</title>
+  <style>
+    :root {
+      --bg: #07101f;
+      --bg-card: #0c1a30;
+      --bg-card2: #101f38;
+      --border: #1c3454;
+      --border-hi: #2d6aad;
+      --accent: #3b82f6;
+      --accent-light: #7cb9f8;
+      --text: #dde9f8;
+      --text-muted: #7a9fc4;
+      --green: #22c55e;
+      --purple: #a855f7;
+      --shadow-card: 0 4px 24px rgba(0,0,0,.4);
+      --shadow-modal: 0 20px 60px rgba(0,0,0,.6);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 15% 10%, rgba(59,130,246,.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(168,85,247,.07) 0%, transparent 55%);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+    .logo {
+      font-family: Arial Black, Arial, sans-serif;
+      font-size: clamp(2.8rem, 8vw, 5rem);
+      font-weight: 900;
+      letter-spacing: .2em;
+      color: var(--accent-light);
+      filter: drop-shadow(0 0 20px rgba(59,130,246,.45));
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .tagline {
+      color: var(--text-muted);
+      font-size: .85rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      margin-bottom: 48px;
+      text-align: center;
+    }
+    .mode-grid {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 740px;
+      width: 100%;
+    }
+    .mode-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 32px;
+      flex: 1 1 280px;
+      max-width: 340px;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .mode-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    }
+    .mode-card.character { border-color: rgba(59,130,246,.4); }
+    .mode-card.character:hover { border-color: var(--accent); box-shadow: 0 12px 40px rgba(59,130,246,.2); }
+    .mode-card.series    { border-color: rgba(168,85,247,.4); }
+    .mode-card.series:hover    { border-color: var(--purple); box-shadow: 0 12px 40px rgba(168,85,247,.2); }
+    .mode-icon { font-size: 3.2rem; }
+    .mode-title {
+      font-family: Arial Black, Arial, sans-serif;
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+    .mode-card.character .mode-title { color: var(--accent-light); }
+    .mode-card.series    .mode-title { color: #c084fc; }
+    .mode-desc {
+      font-size: .85rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+    .mode-pill {
+      font-size: .72rem;
+      padding: 5px 16px;
+      border-radius: 999px;
+      font-weight: bold;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .mode-card.character .mode-pill { background: rgba(59,130,246,.18); color: var(--accent-light); border: 1px solid rgba(59,130,246,.35); }
+    .mode-card.series    .mode-pill { background: rgba(168,85,247,.18); color: #c084fc;              border: 1px solid rgba(168,85,247,.35); }
+    .footer-note {
+      margin-top: 40px;
+      color: var(--text-muted);
+      font-size: .78rem;
+      opacity: .6;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">ANIDLE</div>
+  <p class="tagline">Choose your challenge</p>
+
+  <div class="mode-grid">
+    <a class="mode-card character" href="character.html">
+      <div class="mode-icon">🧑‍🎤</div>
+      <div class="mode-title">Character Mode</div>
+      <p class="mode-desc">Guess the mystery anime character using clues about their series, age, height, gender, hair, and eye color.</p>
+      <span class="mode-pill">Guess the Character</span>
+    </a>
+
+    <a class="mode-card series" href="series.html">
+      <div class="mode-icon">📺</div>
+      <div class="mode-title">Series Mode</div>
+      <p class="mode-desc">Guess the mystery anime series using clues about the studio, release year, genre, episode count, source, and rating.</p>
+      <span class="mode-pill">Guess the Series</span>
+    </a>
+  </div>
+
+  <p class="footer-note">Based on ANIDLE by brinnykins7-hue</p>
+</body>
+</html>
