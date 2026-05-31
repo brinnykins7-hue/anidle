@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ANIDLE – Choose Your Game</title>
+  <title>ANIMEDLE – Choose Your Game</title>
   <!-- Apply saved theme immediately before CSS renders to prevent flash -->
   <script>
     try {
-      var t = localStorage.getItem('anidle_theme');
+      var t = localStorage.getItem('animedle_theme');
       if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
     } catch(e) {}
   </script>
@@ -171,7 +171,7 @@
     <span id="home-theme-icon">🌙</span>
   </button>
 
-  <div class="home-logo">ANIDLE</div>
+  <div class="home-logo">ANIMEDLE</div>
   <p class="home-tagline">Choose your challenge</p>
 
   <div class="mode-grid">
@@ -190,7 +190,7 @@
     </a>
   </div>
 
-  <p class="home-footer">Based on ANIDLE by brinnykins7-hue</p>
+  <p class="home-footer">Based on ANIMEDLE by brinnykins7-hue</p>
 
   <script>
     (function() {
@@ -204,7 +204,7 @@
         currentTheme = theme;
         document.documentElement.setAttribute('data-theme', theme);
         icon.textContent = theme === 'dark' ? '🌙' : '☀️';
-        try { localStorage.setItem('anidle_theme', theme); } catch(e) {}
+        try { localStorage.setItem('animedle_theme', theme); } catch(e) {}
       }
 
       // Sync icon to whatever theme is already active on load
