@@ -49,31 +49,6 @@ Guess the mystery anime series. Each guess reveals clues across 6 attributes:
 
 ---
 
-## Getting Started
-
-No build step required. Just clone and open.
-
-```bash
-git clone https://github.com/your-username/animedle.git
-cd animedle
-```
-
-Then open `index.html` in your browser. That's it.
-
-If you want a local dev server (optional, fixes some browser security restrictions):
-
-```bash
-# Python
-python -m http.server 8080
-
-# Node
-npx serve .
-```
-
-Then visit `http://localhost:8080`.
-
----
-
 ## File Structure
 
 ```
@@ -86,22 +61,21 @@ animedle/
 ├── series-game.js    # Series game logic
 ├── data.js           # Character database
 └── series-data.js    # Series database
-```
 
----
+```
 
 ## Adding Characters or Series
 
 **Characters** — open `data.js` and add an entry to `ANIME_DB`:
 
 ```js
-{ name: "Character Name", series: "Series Name", age: 17, height: 165, gender: "F", hair: "black", eyes: "blue" },
+{ name: "Character Name", series: "Series Name", age: "age in integer", height: "height in integer", gender: "gender in m or f", hair: "hair color", eyes: "eye color" },
 ```
 
 **Series** — open `series-data.js` and add an entry to `SERIES_DB`:
 
 ```js
-{ name: "Series Name", studio: "Studio Name", year: 2020, episodes: 12, genre: "Action", source: "Manga", score: 8.2, status: "Finished", genreList: ["Action", "Adventure"] },
+{ name: "Series Name", studio: "Studio Name", year: "year in int", episodes: "episode count in int", genre: "genre", source: "Manga", score: "score in float", status: "Finished", genreList: ["Action", "Adventure"] },
 ```
 
 Valid values:
