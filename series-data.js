@@ -1,4 +1,4 @@
-// ── ANIDLE SERIES DATABASE ────────────────────────────────────────────────
+// ── ANIMEDLE SERIES DATABASE ────────────────────────────────────────────────
 // Fields:
 //   name      – display name
 //   studio    – main animation studio
