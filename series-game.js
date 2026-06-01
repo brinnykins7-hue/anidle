@@ -1,4 +1,4 @@
-// ── ANIDLE SERIES MODE – GAME LOGIC ──────────────────────────────────────
+// ── ANIMEDLE SERIES MODE – GAME LOGIC ──────────────────────────────────────
 
 const MAX_ATTEMPTS_NORMAL = 20;
 const MAX_ATTEMPTS_HARD   = 10;
@@ -10,13 +10,13 @@ var seriesGameOptions = {
 
 (function() {
   try {
-    var saved = sessionStorage.getItem('anidle_series_options');
+    var saved = sessionStorage.getItem('animedle_series_options');
     if (saved) Object.assign(seriesGameOptions, JSON.parse(saved));
   } catch(e) {}
 })();
 
 function saveSeriesOptions() {
-  try { sessionStorage.setItem('anidle_series_options', JSON.stringify(seriesGameOptions)); } catch(e) {}
+  try { sessionStorage.setItem('animedle_series_options', JSON.stringify(seriesGameOptions)); } catch(e) {}
 }
 
 function maxAttempts() {
@@ -67,7 +67,7 @@ var themeIcon      = themeToggleBtn.querySelector('.theme-icon');
 // ── THEME ──────────────────────────────────────────────────────────────────
 var currentTheme = 'dark';
 try {
-  var saved = localStorage.getItem('anidle_theme');
+  var saved = localStorage.getItem('animedle_theme');
   if (saved === 'light' || saved === 'dark') currentTheme = saved;
 } catch(e) {}
 
@@ -75,7 +75,7 @@ function applyTheme(theme) {
   currentTheme = theme;
   document.documentElement.setAttribute('data-theme', theme);
   themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
-  try { localStorage.setItem('anidle_theme', theme); } catch(e) {}
+  try { localStorage.setItem('animedle_theme', theme); } catch(e) {}
 }
 applyTheme(currentTheme);
 themeToggleBtn.addEventListener('click', function() {
@@ -863,7 +863,7 @@ function startScChallengeGame(data) {
   if (data) {
     setTimeout(function() {
       var started = startScChallengeGame(data);
-      if (!started) console.warn('ANIDLE Series: challenge target not found:', data);
+      if (!started) console.warn('ANIMEDLE Series: challenge target not found:', data);
     }, 50);
   }
 })();
