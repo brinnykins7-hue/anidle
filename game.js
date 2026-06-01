@@ -1,4 +1,4 @@
-// ── ANIDLE GAME LOGIC ─────────────────────────────────────────────────────
+// ── ANIMEDLE GAME LOGIC ─────────────────────────────────────────────────────
 
 const MAX_ATTEMPTS_NORMAL = 20;
 const MAX_ATTEMPTS_HARD   = 10;
@@ -130,13 +130,13 @@ var gameOptions = {
 
 (function() {
   try {
-    var saved = sessionStorage.getItem('anidle_options');
+    var saved = sessionStorage.getItem('animedle_options');
     if (saved) { Object.assign(gameOptions, JSON.parse(saved)); }
   } catch(e) {}
 })();
 
 function saveOptions() {
-  try { sessionStorage.setItem('anidle_options', JSON.stringify(gameOptions)); } catch(e) {}
+  try { sessionStorage.setItem('animedle_options', JSON.stringify(gameOptions)); } catch(e) {}
 }
 
 function maxAttempts() {
@@ -188,7 +188,7 @@ var themeIcon      = themeToggleBtn.querySelector('.theme-icon');
 
 var currentTheme = 'dark';
 try {
-  var saved = localStorage.getItem('anidle_theme');
+  var saved = localStorage.getItem('animedle_theme');
   if (saved === 'light' || saved === 'dark') currentTheme = saved;
 } catch(e) {}
 
@@ -196,7 +196,7 @@ function applyTheme(theme) {
   currentTheme = theme;
   document.documentElement.setAttribute('data-theme', theme);
   themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
-  try { localStorage.setItem('anidle_theme', theme); } catch(e) {}
+  try { localStorage.setItem('animedle_theme', theme); } catch(e) {}
 }
 applyTheme(currentTheme);
 
@@ -1040,7 +1040,7 @@ function tryLoadChallenge() {
     setTimeout(function() {
       var started = startChallengeGame(data);
       if (!started) {
-        console.warn('ANIDLE: challenge character not found:', data);
+        console.warn('ANIMEDLE: challenge character not found:', data);
       }
     }, 50);
   }
