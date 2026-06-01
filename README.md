@@ -44,8 +44,8 @@ Guess the mystery anime series. Each guess reveals clues across 6 attributes:
 - **Light & dark mode** — toggle persists across all pages
 - **Game options** — hard mode, hide series column, search by series name, and more
 - **Challenge mode** — create a custom puzzle and share it via link
-    If you want to try out your own challenge for whatever reason and paste your link into the same tab as the one you made the link on
-    do a hard refresh so it reloads with ctrl + shift + r
+- If you want to try out your own challenge for whatever reason and paste your link into the same tab as the one you made the link on
+  do a hard refresh so it reloads with ctrl + shift + r
 - **No dependencies** — pure HTML, CSS, and vanilla JavaScript; runs entirely in the browser
 
 ---
